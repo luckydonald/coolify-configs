@@ -20,7 +20,7 @@ services:
       SERVICE_FQDN_HEDGEDOC_STATIC: /
       SERVICE_FQDN_HEDGEDOC_STATIC_3000:
       CMD_DB_URL: 'postgres://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_POSTGRES}@database:5432/${POSTGRES_DB:-hedgedoc}'
-      CMD_DOMAIN: '${SERVICE_FQDN_HEDGEDOC}'
+      CMD_DOMAIN: ${SERVICE_URL_HEDGEDOC}  # for now has to be URL instead of FQDN, see https://github.com/coollabsio/coolify/issues/4104
       CMD_URL_ADDPORT: false
       CMD_SESSION_SECRET: SERVICE_PASSWORD_HEDGEDOC
     volumes:
