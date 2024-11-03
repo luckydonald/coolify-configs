@@ -17,12 +17,20 @@ services:
     image: 'quay.io/hedgedoc/hedgedoc:1.9.9'
     environment:
       SERVICE_FQDN_HEDGEDOC: /
-      SERVICE_FQDN_HEDGEDOC_STATIC: /
-      SERVICE_FQDN_HEDGEDOC_STATIC_3000:
+      SERVICE_FQDN_HEDGEDOCSTATIC: /
+      SERVICE_FQDN_HEDGEDOCSTATIC_${CMD_PORT:-3000}:
+      CMD_PORT: ${CMD_PORT:-3000}
       CMD_DB_URL: 'postgres://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_POSTGRES}@database:5432/${POSTGRES_DB:-hedgedoc}'
-      CMD_DOMAIN: ${SERVICE_URL_HEDGEDOC}  # for now has to be URL instead of FQDN, see https://github.com/coollabsio/coolify/issues/4104
-      CMD_URL_ADDPORT: false
-      CMD_SESSION_SECRET: ${SERVICE_PASSWORD_HEDGEDOC_SESSION}
+      CMD_DOMAIN: ${SERVICE_URL_HEDGEDOC_STATIC}  # for now has to be URL instead of FQDN, see https://github.com/coollabsio/coolify/issues/4104
+      CMD_PROTOCOL_USESSL: ${CMD_PROTOCOL_USESSL:-true}
+      CMD_URL_ADDPORT: 'false'
+      CMD_SESSION_SECRET: ${SERVICE_PASSWORD_SESSION}
+      CMD_ALLOW_ANONYMOUS: ${CMD_ALLOW_ANONYMOUS:-false}
+      CMD_ALLOW_EMAIL_REGISTER: ${CMD_ALLOW_ANONYMOUS:-true}
+
+      # https://docs.hedgedoc.org/guides/auth/github/
+      CMD_GITHUB_CLIENTID: ${CMD_GITHUB_CLIENTID:-}
+      CMD_GITHUB_CLIENTSECRET: ${CMD_GITHUB_CLIENTSECRET:-}
     volumes:
       - type: bind
         source: ./hedgedoc_uploads
