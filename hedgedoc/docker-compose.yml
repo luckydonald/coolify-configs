@@ -7,21 +7,28 @@ services:
       - 'POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRES}'
       - 'POSTGRES_DB=${POSTGRES_DB:-hedgedoc}'
     volumes:
-      - 'database:/var/lib/postgresql/data'
-    restart: always
+      - type: bind
+        source: ./postgres
+        target: /var/lib/postgresql/data
+        # noinspection ComposeUnknownKeys
+        is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
+    restart: unless-stopped
   app:
     image: 'quay.io/hedgedoc/hedgedoc:1.9.9'
     environment:
-      - SERVICE_FQDN_HEDGEDOC=/
-      - SERVICE_FQDN_APPWRITE_3000
-      - 'CMD_DB_URL=postgres://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_POSTGRES}@database:5432/${POSTGRES_DB:-hedgedoc}'
-      - 'CMD_DOMAIN=${SERVICE_FQDN_HEDGEDOC}'
-      - CMD_URL_ADDPORT=false
+      SERVICE_FQDN_HEDGEDOC: /
+      SERVICE_FQDN_HEDGEDOC_STATIC: /
+      SERVICE_FQDN_HEDGEDOC_STATIC_3000:
+      CMD_DB_URL: 'postgres://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_POSTGRES}@database:5432/${POSTGRES_DB:-hedgedoc}'
+      CMD_DOMAIN: '${SERVICE_FQDN_HEDGEDOC}'
+      CMD_URL_ADDPORT: false
+      CMD_SESSION_SECRET: SERVICE_PASSWORD_HEDGEDOC
     volumes:
-      - 'uploads:/hedgedoc/public/uploads'
-    restart: always
+      - type: bind
+        source: ./hedgedoc_uploads
+        target: /hedgedoc/public/uploads
+        # noinspection ComposeUnknownKeys
+        is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
+    restart: unless-stopped
     depends_on:
       - database
-volumes:
-  database: null
-  uploads: null
