@@ -1,7 +1,7 @@
 services:
   hbbs:
     container_name: hbbs
-    image: 'rustdesk/rustdesk-server:latest'
+    image: 'rustdesk/rustdesk-server:1.1.12'
     command: hbbs
     volumes:
       - 'ruskdesk-hbbs:/root'
@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
   hbbr:
     container_name: hbbr
-    image: 'rustdesk/rustdesk-server:latest'
+    image: 'rustdesk/rustdesk-server:1.1.12'
     command: hbbr
     volumes:
       - 'ruskdesk-hbbr:/root'
