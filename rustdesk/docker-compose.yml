@@ -1,10 +1,17 @@
 version: '3'
 
 services:
+  # docker run --rm --entrypoint /usr/bin/rustdesk-utils  sctg/sctgdesk-server-server:latest genkeypair
+
   hbbs:
     container_name: hbbs
     image: sctg/sctgdesk-server:latest
-    command: hbbs -r sctgdesk.example.com:21117
+    command: "hbbs -r ${SERVICE_URL_RUSTDESK}:${RUSTDESK_PORT:-21117}"
+    environment:
+      SERVICE_FQDN_RUSTDESK: /  # for now has to be URL instead of FQDN, see https://github.com/coollabsio/coolify/issues/4104
+      SERVICE_FQDN_RUSTDESK_21114:
+      RUSTDESK_PORT: ${RUSTDESK_PORT:-21117}
+      LOGGED_IN_ONLY: ${LOGGED_IN_ONLY:-y}
     volumes:
       - './ruskdesk-hbbs:/usr/local/share/sctgdesk'
     # network_mode OR ports + network
@@ -17,7 +24,6 @@ services:
       - 21118:21118
     networks:
       - sctgdesk-internal-net
-
     depends_on:
       - hbbr
     restart: unless-stopped
@@ -30,8 +36,10 @@ services:
       - './ruskdesk-hbbr:/usr/local/share/sctgdesk'
     # network_mode: host  # or ports + network
     ports:
-      - 21117:21117
+      - ${RUSTDESK_PORT:-21117}:${RUSTDESK_PORT:-21117}
       - 21119:21119
+    environment:
+      PORT: ${RUSTDESK_PORT:-21117}
     networks:
       - sctgdesk-internal-net
     restart: unless-stopped
