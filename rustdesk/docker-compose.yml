@@ -5,7 +5,7 @@ services:
 
   hbbs:
     container_name: hbbs
-    image: sctg/sctgdesk-server:latest
+    image: sctg/sctgdesk-server:1.1.99.47
     command: "hbbs -r ${SERVICE_URL_RUSTDESK}:${RUSTDESK_PORT:-21117}"
     environment:
       SERVICE_FQDN_RUSTDESK: /  # for now has to be URL instead of FQDN, see https://github.com/coollabsio/coolify/issues/4104
@@ -30,7 +30,7 @@ services:
 
   hbbr:
     container_name: hbbr
-    image: sctg/sctgdesk-server:latest
+    image: sctg/sctgdesk-server:1.1.99.47
     command: hbbr
     volumes:
       - './ruskdesk-hbbr:/usr/local/share/sctgdesk'
