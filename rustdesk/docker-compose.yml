@@ -1,19 +1,43 @@
+version: '3'
+
 services:
   hbbs:
     container_name: hbbs
-    image: 'rustdesk/rustdesk-server:1.1.12'
-    command: hbbs
+    image: sctg/sctgdesk-server:latest
+    command: hbbs -r sctgdesk.example.com:21117
     volumes:
-      - 'ruskdesk-hbbs:/root'
-    network_mode: host
+      - './ruskdesk-hbbs:/usr/local/share/sctgdesk'
+    # network_mode OR ports + network
+    # network_mode: host
+    ports:
+      - 21114:21114
+      - 21115:21115
+      - 21116:21116
+      - 21116:21116/udp
+      - 21118:21118
+    networks:
+      - sctgdesk-internal-net
+
     depends_on:
       - hbbr
     restart: unless-stopped
+
   hbbr:
     container_name: hbbr
-    image: 'rustdesk/rustdesk-server:1.1.12'
+    image: sctg/sctgdesk-server:latest
     command: hbbr
     volumes:
-      - 'ruskdesk-hbbr:/root'
-    network_mode: host
+      - './ruskdesk-hbbr:/usr/local/share/sctgdesk'
+    # network_mode: host  # or ports + network
+    ports:
+      - 21117:21117
+      - 21119:21119
+    networks:
+      - sctgdesk-internal-net
     restart: unless-stopped
+
+
+networks:
+  sctgdesk-internal-net:
+    external: false
+
