@@ -12,8 +12,9 @@ services:
       SERVICE_FQDN_RUSTDESK_21114:
       RUSTDESK_PORT: ${RUSTDESK_PORT:-21117}
       LOGGED_IN_ONLY: ${LOGGED_IN_ONLY:-y}
+      SERVICE_URL_RUSTDESK: ${SERVICE_URL_RUSTDESK}
     volumes:
-      - './ruskdesk-hbbs:/usr/local/share/sctgdesk'
+      - './ruskdesk-sctgdesk:/usr/local/share/sctgdesk'
     # network_mode OR ports + network
     # network_mode: host
     ports:
@@ -33,7 +34,7 @@ services:
     image: sctg/sctgdesk-server:1.1.99.47
     command: hbbr
     volumes:
-      - './ruskdesk-hbbr:/usr/local/share/sctgdesk'
+      - './ruskdesk-sctgdesk:/usr/local/share/sctgdesk'
     # network_mode: host  # or ports + network
     ports:
       - ${RUSTDESK_PORT:-21117}:${RUSTDESK_PORT:-21117}
