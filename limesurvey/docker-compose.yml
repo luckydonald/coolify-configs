@@ -1,12 +1,12 @@
 services:
   limesurvey:
-    image: adamzammit/limesurvey:${MARIADB_IMAGE_TAG:-6.9.0}
+    image: "adamzammit/limesurvey:${MARIADB_IMAGE_TAG:-6.9.0}"
     environment:
       SERVICE_FQDN_LIMESURVEY_8082:
-      LIMESURVEY_DB_PASSWORD: ${SERVICE_PASSWORD_LIMESURVEY_DB}
-      LIMESURVEY_ADMIN_USER: ${SERVICE_USER_LIMESURVEY}
-      LIMESURVEY_ADMIN_PASSWORD: ${SERVICE_PASSWORD_LIMESURVEY}
-      LIMESURVEY_ADMIN_NAME: Lime Administrator
+      LIMESURVEY_DB_PASSWORD: "${SERVICE_PASSWORD_LIMESURVEY_DB}"
+      LIMESURVEY_ADMIN_USER: "${SERVICE_USER_LIMESURVEY}"
+      LIMESURVEY_ADMIN_PASSWORD: "${SERVICE_PASSWORD_LIMESURVEY}"
+      LIMESURVEY_ADMIN_NAME: "Lime Administrator"
       LIMESURVEY_ADMIN_EMAIL: "lime-admin@${SERVICE_FQDN_LIMESURVEY}"
       TZ: Europe/London
     volumes:
@@ -32,9 +32,9 @@ services:
         is_directory: true
 
   limesurvey_mysql:
-    image: mariadb:${MARIADB_IMAGE_TAG:-10.5}
+    image: "mariadb:${MARIADB_IMAGE_TAG:-10.5}"
     environment:
-      MYSQL_ROOT_PASSWORD: ${SERVICE_PASSWORD_LIMESURVEY_DB}
+      MYSQL_ROOT_PASSWORD: "${SERVICE_PASSWORD_LIMESURVEY_DB}"
     volumes:
        - type: bind
          source: ./mysql
