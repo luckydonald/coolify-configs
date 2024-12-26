@@ -1,6 +1,6 @@
 services:
   limesurvey:
-    image: adamzammit/limesurvey:6.9.0
+    image: adamzammit/limesurvey:${MARIADB_IMAGE_TAG:-6.9.0}
     environment:
       SERVICE_FQDN_LIMESURVEY_8082:
       LIMESURVEY_DB_PASSWORD: ${SERVICE_PASSWORD_LIMESURVEY_DB}
@@ -32,7 +32,7 @@ services:
         is_directory: true
 
   limesurvey_mysql:
-    image: mariadb:10.5
+    image: mariadb:${MARIADB_IMAGE_TAG:-10.5}
     environment:
       MYSQL_ROOT_PASSWORD: ${SERVICE_PASSWORD_LIMESURVEY_DB}
     volumes:
