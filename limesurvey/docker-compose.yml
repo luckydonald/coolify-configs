@@ -1,24 +1,43 @@
 services:
   limesurvey:
     image: adamzammit/limesurvey:6.9.0
-    ports:
-      - 127.0.0.1:8082:80
     environment:
-      LIMESURVEY_DB_PASSWORD: e/xa|m|ple
-      LIMESURVEY_ADMIN_USER: admin
-      LIMESURVEY_ADMIN_PASSWORD: password
+      SERVICE_FQDN_LIMESURVEY_8082:
+      LIMESURVEY_DB_PASSWORD: ${SERVICE_PASSWORD_LIMESURVEY_DB}
+      LIMESURVEY_ADMIN_USER: ${SERVICE_USER_LIMESURVEY}
+      LIMESURVEY_ADMIN_PASSWORD: ${SERVICE_PASSWORD_LIMESURVEY}
       LIMESURVEY_ADMIN_NAME: Lime Administrator
-      LIMESURVEY_ADMIN_EMAIL: lime@lime.lime
+      LIMESURVEY_ADMIN_EMAIL: "lime-admin@${SERVICE_FQDN_LIMESURVEY}"
       TZ: Europe/London
     volumes:
-      - ./plugins:/var/www/html/plugins
-      - ./upload:/var/www/html/upload
-      - ./config:/var/www/html/application/config
-      - ./sessions:/var/lime/sessions
+      - type: bind
+        source: ./plugins
+        target: /var/www/html/plugins
+        # noinspection ComposeUnknownKeys
+        is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
+      - type: bind
+        source: ./upload
+        target: /var/www/html/upload
+        # noinspection ComposeUnknownKeys
+        is_directory: true
+      - type: bind
+        source: ./config
+        target: /var/www/html/application/config
+        # noinspection ComposeUnknownKeys
+        is_directory: true
+      - type: bind
+        source: ./sessions
+        target: /var/lime/sessions
+        # noinspection ComposeUnknownKeys
+        is_directory: true
 
-  mysql:
+  limesurvey_mysql:
     image: mariadb:10.5
     environment:
-      MYSQL_ROOT_PASSWORD: e/xa|m|ple
+      MYSQL_ROOT_PASSWORD: ${SERVICE_PASSWORD_LIMESURVEY_DB}
     volumes:
-       - ./mysql:/var/lib/mysql
+       - type: bind
+         source: ./mysql
+         target: /var/lib/mysql
+         # noinspection ComposeUnknownKeys
+         is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
