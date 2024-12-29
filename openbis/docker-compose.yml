@@ -45,7 +45,7 @@ services:
       OPENBIS_ETC: /etc/openbis
       OPENBIS_HOME: /home/openbis
       OPENBIS_LOG: /var/log/openbis
-    image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
+    image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.11}
     # healthcheck:
     #   # https://openbis.readthedocs.io/en/latest/system-documentation/docker/verification.html
     #   test: |
