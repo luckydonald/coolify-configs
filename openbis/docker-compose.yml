@@ -22,9 +22,21 @@ services:
             - 8080:8080  # openbis_as  -> /openbis, *
             - 8081:8081  # openbis_dss -> /datastore_server
         volumes:
-            - openbis-app-data:/data
-            - openbis-app-etc:/etc/openbis
-            - openbis-app-logs:/var/log/openbis
+            - type: bind
+              source: ./openbis-app-data
+              target: /data
+                # noinspection ComposeUnknownKeys
+              is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
+            - type: bind
+              source: ./openbis-app-etc
+              target: /etc/openbis
+                # noinspection ComposeUnknownKeys
+              is_directory: true
+            - type: bind
+              source: ./openbis-app-logs
+              target: /var/log/openbis
+                # noinspection ComposeUnknownKeys
+              is_directory: true
         environment:
             - OPENBIS_FQDN=${SERVICE_FQDN_OPENBIS}
             - OPENBIS_ADMIN_PASS=${SERVICE_PASSWORD_OPENBIS_ADMIN}
