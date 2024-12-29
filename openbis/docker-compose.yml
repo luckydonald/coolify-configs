@@ -4,8 +4,12 @@
 name: openbis
 services:
     postgres:
-        volumes:
-            - openbis-db-data:/var/lib/postgresql/data
+      volumes:
+        - type: bind
+          source: ./openbis-db-data
+          target: /var/lib/postgresql/data
+          # noinspection ComposeUnknownKeys
+          is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
         environment:
             - POSTGRES_PASSWORD=${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
             - PGDATA=/var/lib/postgresql/data/pgdata
