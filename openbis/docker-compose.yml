@@ -90,11 +90,11 @@ services:
             
             backend openbis_as
               option forwardfor
-              server as openbis-app:8080 check
+              server as openbis_app:8080 check
             
             backend openbis_dss
               option forwardfor
-              server dss openbis-app:8081 check
+              server dss openbis_app:8081 check
 
       environment:
         SERVICE_FQDN_OPENBIS: /
