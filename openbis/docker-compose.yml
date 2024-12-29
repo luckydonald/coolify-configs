@@ -68,9 +68,6 @@ services:
           content: |
             global
               maxconn 1024
-              ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
-              ssl-default-bind-options no-sslv3
-              tune.ssl.default-dh-param 2048
             
             defaults
               mode http
@@ -84,7 +81,7 @@ services:
               timeout server  60s
             
             frontend openbis_ingress
-              bind *:443 ssl crt /etc/ssl/private
+              bind *:80
               acl is_as path_beg /openbis
               acl is_dss path_beg /datastore_server
               use_backend openbis_as if is_as
@@ -100,5 +97,5 @@ services:
               server dss openbis-app:8081 check
 
       environment:
-        SERVICE_FQDN_OPENBIS_443: /
+        SERVICE_FQDN_OPENBIS: /
         OPENBIS_HOST: openbis_app
