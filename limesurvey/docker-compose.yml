@@ -2,8 +2,9 @@ services:
   limesurvey:
     image: "adamzammit/limesurvey:${MARIADB_IMAGE_TAG:-6.9.0}"
     environment:
-      SERVICE_FQDN_LIMESURVEY_8082:
+      SERVICE_FQDN_LIMESURVEY_80:
       LIMESURVEY_DB_PASSWORD: "${SERVICE_PASSWORD_LIMESURVEY_DB}"
+      LIMESURVEY_DB_HOST: "limesurvey_mysql"
       LIMESURVEY_ADMIN_USER: "${SERVICE_USER_LIMESURVEY}"
       LIMESURVEY_ADMIN_PASSWORD: "${SERVICE_PASSWORD_LIMESURVEY}"
       LIMESURVEY_ADMIN_NAME: "Lime Administrator"
