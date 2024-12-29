@@ -1,9 +1,8 @@
 # Source: https://openbis.readthedocs.io/en/latest/system-documentation/docker/usage.html
 # Converted with: https://www.composerize.com
 
-name: openbis
 services:
-    postgres:
+    openbis_postgres:
         volumes:
             - type: bind
               source: ./openbis-db-data
@@ -15,7 +14,7 @@ services:
             - PGDATA=/var/lib/postgresql/data/pgdata
         image: postgres:${POSTGRES_IMAGE_TAG:-15}
 
-    openbis-app:
+    openbis_app:
         pid: host
         volumes:
             - type: bind
@@ -41,7 +40,7 @@ services:
             - OPENBIS_DB_ADMIN_USER=postgres
             - OPENBIS_DB_APP_PASS=${SERVICE_PASSWORD_OPENBIS_DB_APP}
             - OPENBIS_DB_APP_USER=${SERVICE_USER_OPENBIS_DB_APP:-openbis}
-            - OPENBIS_DB_HOST=openbis-db
+            - OPENBIS_DB_HOST=openbis_postgres
             - OPENBIS_ETC=/etc/openbis
             - OPENBIS_HOME=/home/openbis
             - OPENBIS_LOG=/var/log/openbis
