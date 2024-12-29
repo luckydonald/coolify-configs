@@ -21,10 +21,6 @@ services:
         networks:
             - openbis-network
         pid: host
-        ports:
-            # Mapping: https://sissource.ethz.ch/sispub/openbis-continuous-integration/-/blob/6a2961de610ce09a27553768da9c7d9fd01a833f/hub/openbis-local/haproxy.cfg#L19-24
-            - 8080:8080  # openbis_as  -> /openbis, *
-            - 8081:8081  # openbis_dss -> /datastore_server
         volumes:
             - type: bind
               source: ./openbis-app-data
@@ -53,6 +49,20 @@ services:
             - OPENBIS_ETC=/etc/openbis
             - OPENBIS_HOME=/home/openbis
             - OPENBIS_LOG=/var/log/openbis
+
+            # URL MAPPING
+            #
+            # coolify config:
+            # # http://api-vgsco4o.example.com/api will be proxied to port 2000
+            # - SERVICE_FQDN_API_2000=/api
+            #
+            # path mappings:
+            # See the proxy's mapping at https://sissource.ethz.ch/sispub/openbis-continuous-integration/-/blob/6a2961de610ce09a27553768da9c7d9fd01a833f/hub/openbis-local/haproxy.cfg#L19-24
+            # *, /openbis,       --> openbis_as  -> :8080
+            # /datastore_server  --> openbis_dss -> :8081
+            #
+            - SERVICE_FQDN_OPENBIS_8080=/openbis
+            - SERVICE_FQDN_OPENBIS_8081=/datastore_server
         image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
 
 networks:
