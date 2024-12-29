@@ -56,17 +56,3 @@ services:
             - SERVICE_FQDN_OPENBIS_8080=/openbis
             - SERVICE_FQDN_OPENBIS_8081=/datastore_server
         image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
-
-volumes:
-    openbis-db-data:
-        external: true
-        name: openbis-db-data
-    openbis-app-data:
-        external: true
-        name: openbis-app-data
-    openbis-app-etc:
-        external: true
-        name: openbis-app-etc
-    openbis-app-logs:
-        external: true
-        name: openbis-app-logs
