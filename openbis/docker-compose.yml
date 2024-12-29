@@ -57,6 +57,6 @@ services:
       # *, /openbis,       --> openbis_as  -> :8080
       # /datastore_server  --> openbis_dss -> :8081
       #
-      SERVICE_FQDN_OPENBIS_8080: /openbis
-      SERVICE_FQDN_OPENBIS_8081: /datastore_server
+      SERVICE_FQDN_OPENBIS_8080: /
+      SERVICE_FQDN_OPENBISDATASTORE_8081: /
     image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
