@@ -1,73 +1,46 @@
 # Source: https://openbis.readthedocs.io/en/latest/system-documentation/docker/usage.html
 # Converted with: https://www.composerize.com
 
-
-
-# ignored : docker network create openbis-network --driver bridge;
-# ignored options for 'postgres'
-# --detach
-
-# ignored options for 'openbis-app'
-# --detach
-
-# ignored options for 'openbis-local'
-# --detach
 name: openbis
 services:
     postgres:
-        container_name: openbis-db
-        hostname: openbis-db
         networks:
             - openbis-network
         volumes:
             - openbis-db-data:/var/lib/postgresql/data
         environment:
-            - POSTGRES_PASSWORD=mysecretpassword
+            - POSTGRES_PASSWORD=${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
             - PGDATA=/var/lib/postgresql/data/pgdata
         image: postgres:${POSTGRES_IMAGE_TAG:-15}
 
     openbis-app:
-        container_name: openbis-app
-        hostname: openbis-app
         networks:
             - openbis-network
         pid: host
         ports:
-            - 8080:8080
-            - 8081:8081
+            # Mapping: https://sissource.ethz.ch/sispub/openbis-continuous-integration/-/blob/6a2961de610ce09a27553768da9c7d9fd01a833f/hub/openbis-local/haproxy.cfg#L19-24
+            - 8080:8080  # openbis_as  -> /openbis, *
+            - 8081:8081  # openbis_dss -> /datastore_server
         volumes:
             - openbis-app-data:/data
             - openbis-app-etc:/etc/openbis
             - openbis-app-logs:/var/log/openbis
         environment:
-            - OPENBIS_ADMIN_PASS=123456789
+            - OPENBIS_FQDN=${SERVICE_FQDN_OPENBIS}
+            - OPENBIS_ADMIN_PASS=${SERVICE_PASSWORD_OPENBIS_ADMIN}
             - OPENBIS_DATA=/data/openbis
-            - OPENBIS_DB_ADMIN_PASS=mysecretpassword
+            - OPENBIS_DB_ADMIN_PASS=${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
             - OPENBIS_DB_ADMIN_USER=postgres
-            - OPENBIS_DB_APP_PASS=mysecretpassword
-            - OPENBIS_DB_APP_USER=openbis
+            - OPENBIS_DB_APP_PASS=${SERVICE_PASSWORD_OPENBIS_DB_APP}
+            - OPENBIS_DB_APP_USER=${SERVICE_USER_OPENBIS_DB_APP:openbis}
             - OPENBIS_DB_HOST=openbis-db
             - OPENBIS_ETC=/etc/openbis
             - OPENBIS_HOME=/home/openbis
             - OPENBIS_LOG=/var/log/openbis
-            - OPENBIS_FQDN=local.openbis.ch
         image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
-
-    openbis-local:
-        container_name: openbis-ingress
-        hostname: openbis-ingress
-        networks:
-            - openbis-network
-        pid: host
-        ports:
-            - 443:443
-        environment:
-            - OPENBIS_HOST=openbis-app
-        image: openbis/openbis-local:${OPENBIS_LOCAL_IMAGE_TAG:-latest}
 
 networks:
     openbis-network:
-        external: true
         name: openbis-network
 
 volumes:
