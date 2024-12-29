@@ -36,7 +36,7 @@ services:
             - OPENBIS_DB_ADMIN_PASS=${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
             - OPENBIS_DB_ADMIN_USER=postgres
             - OPENBIS_DB_APP_PASS=${SERVICE_PASSWORD_OPENBIS_DB_APP}
-            - OPENBIS_DB_APP_USER=${SERVICE_USER_OPENBIS_DB_APP:openbis}
+            - OPENBIS_DB_APP_USER=${SERVICE_USER_OPENBIS_DB_APP:-openbis}
             - OPENBIS_DB_HOST=openbis-db
             - OPENBIS_ETC=/etc/openbis
             - OPENBIS_HOME=/home/openbis
