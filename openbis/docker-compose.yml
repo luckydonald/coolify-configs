@@ -1,63 +1,81 @@
-version: "3.7"
+# Source: https://openbis.readthedocs.io/en/latest/system-documentation/docker/usage.html
+# Converted with: https://www.composerize.com
 
+
+
+# ignored : docker network create openbis-network --driver bridge;
+# ignored options for 'postgres'
+# --detach
+
+# ignored options for 'openbis-app'
+# --detach
+
+# ignored options for 'openbis-local'
+# --detach
+name: <your project name>
 services:
-  openbis-db:
-    container_name: openbis-db
-    image: docker.io/postgres:15
-    hostname: openbis-db
-    environment:
-      - POSTGRES_PASSWORD=aiLah4su
-      - PGDATA=/var/lib/postgresql/data
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    volumes:
-      - openbis-db-data:/var/lib/postgresql/data
-    networks:
-      - openbis-production-network
-
-  openbis-app:
-    container_name: openbis-app
-    image: docker.io/openbis/openbis-app:20.10.10
-    hostname: openbis-app
-    depends_on:
-      - openbis-db
-    environment:
-      - OPENBIS_ADMIN_PASS=FaH8eele
-      - OPENBIS_DATA=/data/openbis
-      - OPENBIS_DB_ADMIN_PASS=aiLah4su
-      - OPENBIS_DB_ADMIN_USER=postgres
-      - OPENBIS_DB_APP_PASS=Ay5Ing8m
-      - OPENBIS_DB_APP_USER=openbis
-      - OPENBIS_DB_HOST=openbis-db
-      - OPENBIS_ETC=/etc/openbis
-      - OPENBIS_HOME=/home/openbis
-      - OPENBIS_LOG=/var/log/openbis
-      - OPENBIS_FQDN=production.openbis.ch
-    env_file:
-      - /home/openbis/openbis-settings.env
-      - /home/openbis/openbis-credentials.env
-    volumes:
-      - openbis-app-data:/data
-      - openbis-app-etc:/etc/openbis
-      - openbis-app-logs:/var/log/openbis
-    ports:
-      - 4180:8080
-      - 4181:8081
-    networks:
-      - openbis-production-network
-
-
-volumes:
-  openbis-db-data:
-    name: "openbis-db-data"
-  openbis-app-data:
-    name: "openbis-app-data"
-  openbis-app-etc:
-    name: "openbis-app-etc"
-  openbis-app-logs:
-    name: "openbis-app-logs"
-
-
+    postgres:
+        container_name: openbis-db
+        hostname: openbis-db
+        networks:
+            - openbis-network
+        volumes:
+            - openbis-db-data:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_PASSWORD=mysecretpassword
+            - PGDATA=/var/lib/postgresql/data/pgdata
+        image: postgres:15;
+    openbis-app:
+        container_name: openbis-app
+        hostname: openbis-app
+        networks:
+            - openbis-network
+        pid: host
+        ports:
+            - 8080:8080
+            - 8081:8081
+        volumes:
+            - openbis-app-data:/data
+            - openbis-app-etc:/etc/openbis
+            - openbis-app-logs:/var/log/openbis
+        environment:
+            - OPENBIS_ADMIN_PASS=123456789
+            - OPENBIS_DATA=/data/openbis
+            - OPENBIS_DB_ADMIN_PASS=mysecretpassword
+            - OPENBIS_DB_ADMIN_USER=postgres
+            - OPENBIS_DB_APP_PASS=mysecretpassword
+            - OPENBIS_DB_APP_USER=openbis
+            - OPENBIS_DB_HOST=openbis-db
+            - OPENBIS_ETC=/etc/openbis
+            - OPENBIS_HOME=/home/openbis
+            - OPENBIS_LOG=/var/log/openbis
+            - OPENBIS_FQDN=local.openbis.ch
+        image: openbis/openbis-app:20.10.9;
+    openbis-local:
+        container_name: openbis-ingress
+        hostname: openbis-ingress
+        networks:
+            - openbis-network
+        pid: host
+        ports:
+            - 443:443
+        environment:
+            - OPENBIS_HOST=openbis-app
+        image: openbis/openbis-local:latest;
 networks:
-  openbis-production-network:
-    name: "openbis-production-network"
-
+    openbis-network:
+        external: true
+        name: openbis-network
+volumes:
+    openbis-db-data:
+        external: true
+        name: openbis-db-data
+    openbis-app-data:
+        external: true
+        name: openbis-app-data
+    openbis-app-etc:
+        external: true
+        name: openbis-app-etc
+    openbis-app-logs:
+        external: true
+        name: openbis-app-logs
