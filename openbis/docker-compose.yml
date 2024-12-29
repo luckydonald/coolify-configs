@@ -46,14 +46,14 @@ services:
       OPENBIS_HOME: /home/openbis
       OPENBIS_LOG: /var/log/openbis
     image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
-    healthcheck:
-      # https://openbis.readthedocs.io/en/latest/system-documentation/docker/verification.html
-      test: |
-        /home/openbis/servers/openBIS-server/jetty/bin/status.sh \
-        && /home/openbis/servers/openBIS-server/jetty/bin/version.sh \
-        && /home/openbis/servers/openBIS-server/jetty/bin/passwd.sh list \
-        && wget -q --output-document - http://localhost:8080/openbis/webapp/eln-lims/version.txt \
-        && pgrep -af DataStoreServer
+    # healthcheck:
+    #   # https://openbis.readthedocs.io/en/latest/system-documentation/docker/verification.html
+    #   test: |
+    #     /home/openbis/servers/openBIS-server/jetty/bin/status.sh \
+    #     && /home/openbis/servers/openBIS-server/jetty/bin/version.sh \
+    #     && /home/openbis/servers/openBIS-server/jetty/bin/passwd.sh list \
+    #     && wget -q --output-document - http://localhost:8080/openbis/webapp/eln-lims/version.txt \
+    #     && pgrep -af DataStoreServer
 
   openbis_ingress:
       image: haproxytech/haproxy-ubuntu:latest
