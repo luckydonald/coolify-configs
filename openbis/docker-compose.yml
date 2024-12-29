@@ -1,103 +1,25 @@
 version: "3.7"
 
 services:
-  openbis-previous-db:
-    container_name: openbis-previous-db
+  openbis-db:
+    container_name: openbis-db
     image: docker.io/postgres:15
-    hostname: openbis-previous-db
+    hostname: openbis-db
     environment:
       - POSTGRES_PASSWORD=aiLah4su
       - PGDATA=/var/lib/postgresql/data
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
-      - openbis-previous-db-data:/var/lib/postgresql/data
-    networks:
-      - openbis-previous-network
-
-  openbis-production-db:
-    container_name: openbis-production-db
-    image: docker.io/postgres:15
-    hostname: openbis-production-db
-    environment:
-      - POSTGRES_PASSWORD=aiLah4su
-      - PGDATA=/var/lib/postgresql/data
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    volumes:
-      - openbis-production-db-data:/var/lib/postgresql/data
+      - openbis-db-data:/var/lib/postgresql/data
     networks:
       - openbis-production-network
 
-  openbis-release-candidate-db:
-    container_name: openbis-release-candidate-db
-    image: docker.io/postgres:15
-    hostname: openbis-release-candidate-db
-    environment:
-      - POSTGRES_PASSWORD=aiLah4su
-      - PGDATA=/var/lib/postgresql/data
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    volumes:
-      - openbis-release-candidate-db-data:/var/lib/postgresql/data
-    networks:
-      - openbis-release-candidate-network
-
-  openbis-early-access-db:
-    container_name: openbis-early-access-db
-    image: docker.io/postgres:15
-    hostname: openbis-early-access-db
-    environment:
-      - POSTGRES_PASSWORD=aiLah4su
-      - PGDATA=/var/lib/postgresql/data
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    logging:
-      driver: syslog
-      options:
-        tag: "openbis-early-access-db"
-        syslog-address: "tcp+tls://id-sis-rp-rsyslog.ethz.ch:514"
-        syslog-format: "rfc5424"
-        syslog-facility: "daemon"
-        syslog-tls-skip-verify: "true"
-        syslog-tls-ca-cert: "/etc/ssl/certs/ca-certificates.crt"
-    volumes:
-      - openbis-early-access-db-data:/var/lib/postgresql/data
-    networks:
-      - openbis-early-access-network
-
-  openbis-previous-app:
-    container_name: openbis-previous-app
-    image: docker.io/openbis/openbis-app:20.10.9
-    depends_on:
-      - openbis-previous-db
-    environment:
-      - OPENBIS_ADMIN_PASS=FaH8eele
-      - OPENBIS_DATA=/data/openbis
-      - OPENBIS_DB_ADMIN_PASS=aiLah4su
-      - OPENBIS_DB_ADMIN_USER=postgres
-      - OPENBIS_DB_APP_PASS=Ay5Ing8m
-      - OPENBIS_DB_APP_USER=openbis
-      - OPENBIS_DB_HOST=openbis-previous-db
-      - OPENBIS_ETC=/etc/openbis
-      - OPENBIS_HOME=/home/openbis
-      - OPENBIS_LOG=/var/log/openbis
-      - OPENBIS_FQDN=previous.openbis.ch
-    env_file:
-      - /home/openbis/openbis-settings.env
-      - /home/openbis/openbis-credentials.env
-    volumes:
-      - openbis-previous-app-data:/data
-      - openbis-previous-app-etc:/etc/openbis
-      - openbis-previous-app-logs:/var/log/openbis
-    ports:
-      - 4080:8080
-      - 4081:8081
-    networks:
-      - openbis-previous-network
-
-  openbis-production-app:
-    container_name: openbis-production-app
+  openbis-app:
+    container_name: openbis-app
     image: docker.io/openbis/openbis-app:20.10.10
-    hostname: openbis-production-app
+    hostname: openbis-app
     depends_on:
-      - openbis-production-db
+      - openbis-db
     environment:
       - OPENBIS_ADMIN_PASS=FaH8eele
       - OPENBIS_DATA=/data/openbis
@@ -105,7 +27,7 @@ services:
       - OPENBIS_DB_ADMIN_USER=postgres
       - OPENBIS_DB_APP_PASS=Ay5Ing8m
       - OPENBIS_DB_APP_USER=openbis
-      - OPENBIS_DB_HOST=openbis-production-db
+      - OPENBIS_DB_HOST=openbis-db
       - OPENBIS_ETC=/etc/openbis
       - OPENBIS_HOME=/home/openbis
       - OPENBIS_LOG=/var/log/openbis
@@ -114,122 +36,28 @@ services:
       - /home/openbis/openbis-settings.env
       - /home/openbis/openbis-credentials.env
     volumes:
-      - openbis-production-app-data:/data
-      - openbis-production-app-etc:/etc/openbis
-      - openbis-production-app-logs:/var/log/openbis
+      - openbis-app-data:/data
+      - openbis-app-etc:/etc/openbis
+      - openbis-app-logs:/var/log/openbis
     ports:
       - 4180:8080
       - 4181:8081
     networks:
       - openbis-production-network
 
-  openbis-release-candidate-app:
-    container_name: openbis-release-candidate-app
-    image: docker.io/openbis/openbis-app:20.10.11
-    #image: registry.gitlab.com/wilkart/openbis/openbis-app:20.10.9.2
-    #image: registry.sissource.ethz.ch:5005/sispub/openbis-continuous-integration/openbis-app:20.10.9.2
-    hostname: openbis-release-candidate-app
-    depends_on:
-      - openbis-release-candidate-db
-    environment:
-      - OPENBIS_ADMIN_PASS=FaH8eele
-      - OPENBIS_DATA=/data/openbis
-      - OPENBIS_DB_ADMIN_PASS=aiLah4su
-      - OPENBIS_DB_ADMIN_USER=postgres
-      - OPENBIS_DB_APP_PASS=Ay5Ing8m
-      - OPENBIS_DB_APP_USER=openbis
-      - OPENBIS_DB_HOST=openbis-release-candidate-db
-      - OPENBIS_ETC=/etc/openbis
-      - OPENBIS_HOME=/home/openbis
-      - OPENBIS_LOG=/var/log/openbis
-      - OPENBIS_FQDN=release-candidate.openbis.ch
-    env_file:
-      - /home/openbis/openbis-settings.env
-      - /home/openbis/openbis-credentials.env
-    volumes:
-      - openbis-release-candidate-app-data:/data
-      - openbis-release-candidate-app-etc:/etc/openbis
-      - openbis-release-candidate-app-logs:/var/log/openbis
-    ports:
-      - 4280:8080
-      - 4281:8081
-    networks:
-      - openbis-release-candidate-network
-
-  openbis-early-access-app:
-    container_name: openbis-early-access-app
-    image: docker.io/openbis/openbis-app:6.6
-    hostname: openbis-early-access-app
-    depends_on:
-      - openbis-early-access-db
-    environment:
-      - OPENBIS_ADMIN_PASS=FaH8eele
-      - OPENBIS_DATA=/data/openbis
-      - OPENBIS_DB_ADMIN_PASS=aiLah4su
-      - OPENBIS_DB_ADMIN_USER=postgres
-      - OPENBIS_DB_APP_PASS=Ay5Ing8m
-      - OPENBIS_DB_APP_USER=openbis
-      - OPENBIS_DB_HOST=openbis-early-access-db
-      - OPENBIS_ETC=/etc/openbis
-      - OPENBIS_HOME=/home/openbis
-      - OPENBIS_LOG=/var/log/openbis
-      - OPENBIS_FQDN=early-access.openbis.ch
-    env_file:
-      - /home/openbis/openbis-7-settings.env
-      - /home/openbis/openbis-7-credentials.env
-    volumes:
-      - openbis-early-access-app-data:/data
-      - openbis-early-access-app-etc:/etc/openbis
-      - openbis-early-access-app-logs:/var/log/openbis
-    ports:
-      - 4380:8080
-      - 4381:8081
-    networks:
-      - openbis-early-access-network
-
 
 volumes:
-  openbis-previous-db-data:
-    name: "openbis-previous-db-data"
-  openbis-previous-app-data:
-    name: "openbis-previous-app-data"
-  openbis-previous-app-etc:
-    name: "openbis-previous-app-etc"
-  openbis-previous-app-logs:
-    name: "openbis-previous-app-logs"
-  openbis-production-db-data:
-    name: "openbis-production-db-data"
-  openbis-production-app-data:
-    name: "openbis-production-app-data"
-  openbis-production-app-etc:
-    name: "openbis-production-app-etc"
-  openbis-production-app-logs:
-    name: "openbis-production-app-logs"
-  openbis-release-candidate-db-data:
-    name: "openbis-release-candidate-db-data"
-  openbis-release-candidate-app-data:
-    name: "openbis-release-candidate-app-data"
-  openbis-release-candidate-app-etc:
-    name: "openbis-release-candidate-app-etc"
-  openbis-release-candidate-app-logs:
-    name: "openbis-release-candidate-app-logs"
-  openbis-early-access-db-data:
-    name: "openbis-early-access-db-data"
-  openbis-early-access-app-data:
-    name: "openbis-early-access-app-data"
-  openbis-early-access-app-etc:
-    name: "openbis-early-access-app-etc"
-  openbis-early-access-app-logs:
-    name: "openbis-early-access-app-logs"
+  openbis-db-data:
+    name: "openbis-db-data"
+  openbis-app-data:
+    name: "openbis-app-data"
+  openbis-app-etc:
+    name: "openbis-app-etc"
+  openbis-app-logs:
+    name: "openbis-app-logs"
 
 
 networks:
-  openbis-previous-network:
-    name: "openbis-previous-network"
   openbis-production-network:
     name: "openbis-production-network"
-  openbis-release-candidate-network:
-    name: "openbis-release-candidate-network"
-  openbis-early-access-network:
-    name: "openbis-early-access-network"
 
