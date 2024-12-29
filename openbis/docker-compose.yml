@@ -2,61 +2,61 @@
 # Converted with: https://www.composerize.com
 
 services:
-    openbis_postgres:
-        volumes:
-          - type: bind
-            source: ./openbis-db-data
-            target: /var/lib/postgresql/data
-            # noinspection ComposeUnknownKeys
-            is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
-        environment:
-          POSTGRES_PASSWORD: ${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
-          # noinspection SpellCheckingInspection
-          PGDATA: /var/lib/postgresql/data/pgdata
-        image: postgres:${POSTGRES_IMAGE_TAG:-15}
+  openbis_postgres:
+    volumes:
+      - type: bind
+        source: ./openbis-db-data
+        target: /var/lib/postgresql/data
+        # noinspection ComposeUnknownKeys
+        is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
+    environment:
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
+      # noinspection SpellCheckingInspection
+      PGDATA: /var/lib/postgresql/data/pgdata
+    image: postgres:${POSTGRES_IMAGE_TAG:-15}
 
-    openbis_app:
-        pid: host
-        volumes:
-          - type: bind
-            source: ./openbis-app-data
-            target: /data
-              # noinspection ComposeUnknownKeys
-            is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
-          - type: bind
-            source: ./openbis-app-etc
-            target: /etc/openbis
-              # noinspection ComposeUnknownKeys
-            is_directory: true
-          - type: bind
-            source: ./openbis-app-logs
-            target: /var/log/openbis
-              # noinspection ComposeUnknownKeys
-            is_directory: true
-        environment:
-          OPENBIS_FQDN: ${SERVICE_FQDN_OPENBIS}
-          OPENBIS_ADMIN_PASS: ${SERVICE_PASSWORD_OPENBIS_ADMIN}
-          OPENBIS_DATA: /data/openbis
-          OPENBIS_DB_ADMIN_PASS: ${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
-          OPENBIS_DB_ADMIN_USER: postgres
-          OPENBIS_DB_APP_PASS: ${SERVICE_PASSWORD_OPENBIS_DB_APP}
-          OPENBIS_DB_APP_USER: ${SERVICE_USER_OPENBIS_DB_APP:-openbis}
-          OPENBIS_DB_HOST: openbis_postgres
-          OPENBIS_ETC: /etc/openbis
-          OPENBIS_HOME: /home/openbis
-          OPENBIS_LOG: /var/log/openbis
+  openbis_app:
+    pid: host
+    volumes:
+      - type: bind
+        source: ./openbis-app-data
+        target: /data
+          # noinspection ComposeUnknownKeys
+        is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
+      - type: bind
+        source: ./openbis-app-etc
+        target: /etc/openbis
+          # noinspection ComposeUnknownKeys
+        is_directory: true
+      - type: bind
+        source: ./openbis-app-logs
+        target: /var/log/openbis
+          # noinspection ComposeUnknownKeys
+        is_directory: true
+    environment:
+      OPENBIS_FQDN: ${SERVICE_FQDN_OPENBIS}
+      OPENBIS_ADMIN_PASS: ${SERVICE_PASSWORD_OPENBIS_ADMIN}
+      OPENBIS_DATA: /data/openbis
+      OPENBIS_DB_ADMIN_PASS: ${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
+      OPENBIS_DB_ADMIN_USER: postgres
+      OPENBIS_DB_APP_PASS: ${SERVICE_PASSWORD_OPENBIS_DB_APP}
+      OPENBIS_DB_APP_USER: ${SERVICE_USER_OPENBIS_DB_APP:-openbis}
+      OPENBIS_DB_HOST: openbis_postgres
+      OPENBIS_ETC: /etc/openbis
+      OPENBIS_HOME: /home/openbis
+      OPENBIS_LOG: /var/log/openbis
 
-          # URL MAPPING
-          #
-          # coolify config:
-          # # http://api-vgsco4o.example.com/api will be proxied to port 2000
-          # - SERVICE_FQDN_API_2000=/api
-          #
-          # path mappings:
-          # See the proxy's mapping at https://sissource.ethz.ch/sispub/openbis-continuous-integration/-/blob/6a2961de610ce09a27553768da9c7d9fd01a833f/hub/openbis-local/haproxy.cfg#L19-24
-          # *, /openbis,       --> openbis_as  -> :8080
-          # /datastore_server  --> openbis_dss -> :8081
-          #
-          SERVICE_FQDN_OPENBIS_8080: /openbis
-          SERVICE_FQDN_OPENBIS_8081: /datastore_server
-        image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
+      # URL MAPPING
+      #
+      # coolify config:
+      # # http://api-vgsco4o.example.com/api will be proxied to port 2000
+      # - SERVICE_FQDN_API_2000=/api
+      #
+      # path mappings:
+      # See the proxy's mapping at https://sissource.ethz.ch/sispub/openbis-continuous-integration/-/blob/6a2961de610ce09a27553768da9c7d9fd01a833f/hub/openbis-local/haproxy.cfg#L19-24
+      # *, /openbis,       --> openbis_as  -> :8080
+      # /datastore_server  --> openbis_dss -> :8081
+      #
+      SERVICE_FQDN_OPENBIS_8080: /openbis
+      SERVICE_FQDN_OPENBIS_8081: /datastore_server
+    image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
