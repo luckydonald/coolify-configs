@@ -10,7 +10,7 @@ services:
         # noinspection ComposeUnknownKeys
         is_directory: true # This will tell Coolify to create the directory (this is not available in a normal docker-compose)
     environment:
-      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_OPENBISDBADMIN}
       # noinspection SpellCheckingInspection
       PGDATA: /var/lib/postgresql/data/pgdata
     image: postgres:${POSTGRES_IMAGE_TAG:-15}
@@ -35,12 +35,12 @@ services:
         is_directory: true
     environment:
       OPENBIS_FQDN: ${SERVICE_FQDN_OPENBIS}
-      OPENBIS_ADMIN_PASS: ${SERVICE_PASSWORD_OPENBIS_ADMIN}
+      OPENBIS_ADMIN_PASS: ${SERVICE_PASSWORD_OPENBISADMIN}
       OPENBIS_DATA: /data/openbis
-      OPENBIS_DB_ADMIN_PASS: ${SERVICE_PASSWORD_OPENBIS_DB_ADMIN}
+      OPENBIS_DB_ADMIN_PASS: ${SERVICE_PASSWORD_OPENBISDBADMIN}
       OPENBIS_DB_ADMIN_USER: postgres
-      OPENBIS_DB_APP_PASS: ${SERVICE_PASSWORD_OPENBIS_DB_APP}
-      OPENBIS_DB_APP_USER: ${SERVICE_USER_OPENBIS_DB_APP:-openbis}
+      OPENBIS_DB_APP_PASS: ${SERVICE_PASSWORD_OPENBISDBAPP}
+      OPENBIS_DB_APP_USER: ${SERVICE_USER_OPENBISDBAPP:-openbis}
       OPENBIS_DB_HOST: openbis_postgres
       OPENBIS_ETC: /etc/openbis
       OPENBIS_HOME: /home/openbis
