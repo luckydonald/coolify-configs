@@ -12,7 +12,7 @@
 
 # ignored options for 'openbis-local'
 # --detach
-name: <your project name>
+name: openbis
 services:
     postgres:
         container_name: openbis-db
@@ -24,7 +24,8 @@ services:
         environment:
             - POSTGRES_PASSWORD=mysecretpassword
             - PGDATA=/var/lib/postgresql/data/pgdata
-        image: postgres:15;
+        image: postgres:${POSTGRES_IMAGE_TAG:-15}
+
     openbis-app:
         container_name: openbis-app
         hostname: openbis-app
@@ -50,7 +51,8 @@ services:
             - OPENBIS_HOME=/home/openbis
             - OPENBIS_LOG=/var/log/openbis
             - OPENBIS_FQDN=local.openbis.ch
-        image: openbis/openbis-app:20.10.9;
+        image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
+
     openbis-local:
         container_name: openbis-ingress
         hostname: openbis-ingress
@@ -61,11 +63,13 @@ services:
             - 443:443
         environment:
             - OPENBIS_HOST=openbis-app
-        image: openbis/openbis-local:latest;
+        image: openbis/openbis-local:${OPENBIS_LOCAL_IMAGE_TAG:-latest}
+
 networks:
     openbis-network:
         external: true
         name: openbis-network
+
 volumes:
     openbis-db-data:
         external: true
