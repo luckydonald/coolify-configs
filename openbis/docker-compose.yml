@@ -56,12 +56,8 @@ services:
         && pgrep -af DataStoreServer
 
   openbis_ingress:
-      container_name: openbis-ingress
-      hostname: openbis-ingress
-      networks:
-          - openbis-network
+      image: openbis/openbis-local:${OPENBIS_LOCAL_IMAGE_TAG:-latest}
       pid: host
       environment:
         SERVICE_FQDN_OPENBIS_443: /
         OPENBIS_HOST: openbis_app
-      image: openbis/openbis-local:${OPENBIS_LOCAL_IMAGE_TAG:-latest}
