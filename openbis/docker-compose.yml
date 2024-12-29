@@ -4,8 +4,6 @@
 name: openbis
 services:
     postgres:
-        networks:
-            - openbis-network
         volumes:
             - openbis-db-data:/var/lib/postgresql/data
         environment:
@@ -14,8 +12,6 @@ services:
         image: postgres:${POSTGRES_IMAGE_TAG:-15}
 
     openbis-app:
-        networks:
-            - openbis-network
         pid: host
         volumes:
             - type: bind
@@ -60,10 +56,6 @@ services:
             - SERVICE_FQDN_OPENBIS_8080=/openbis
             - SERVICE_FQDN_OPENBIS_8081=/datastore_server
         image: openbis/openbis-app:${OPENBIS_APP_IMAGE_TAG:-20.10.9}
-
-networks:
-    openbis-network:
-        name: openbis-network
 
 volumes:
     openbis-db-data:
