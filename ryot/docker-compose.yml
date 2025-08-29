@@ -17,7 +17,7 @@ services:
     container_name: ryot
     restart: unless-stopped
     environment:
-      _FQDN: ${SERVICE_FQDN_RYOT}
+      SERVICE_FQDN_RYOT_8000:
       TZ: ${TZ:-Europe/Amsterdam}
       SERVER_ADMIN_ACCESS_TOKEN: ${SERVICE_PASSWORD_RYOTADMIN}
       DATABASE_URL: "postgres://${SERVICE_USER_POSTGRESUSER:-${SERVICE_PASSWORD_POSTGRES:-password-unknown}}:postgres@postgres:5432/${SERVICE_USER_POSTGRESDB}"
