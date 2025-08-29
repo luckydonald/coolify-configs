@@ -70,7 +70,7 @@ services:
       # frontend
 
       # Used as the base URL when generating item links for the frontend. I.e. `"https://app.ryot.io"`.
-      FRONTEND_URL: ${FRONTEND_URL:-https://app.ryot.io}
+      FRONTEND_URL: ${FRONTEND_URL:-${SERVICE_URL_RYOT:-https://app.ryot.io}}
 
       # A message to be displayed on the dashboard.
       FRONTEND_DASHBOARD_MESSAGE: ${FRONTEND_DASHBOARD_MESSAGE:-}
