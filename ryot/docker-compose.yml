@@ -21,6 +21,7 @@ services:
     environment:
       # see https://coolify.io/docs/knowledge-base/docker/compose#coolify-s-magic-environment-variables
       SERVICE_FQDN_RYOT_8000:  # makes sure the routing works in Coolify,
+      PORT: 8000
 
       # anime and manga
 
