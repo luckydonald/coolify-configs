@@ -20,5 +20,5 @@ services:
       - "8000:8000"
     environment:
       TZ: ${TZ:-Europe/Amsterdam}
-      SERVER_ADMIN_ACCESS_TOKEN: ${$SERVICE_PASSWORD_RYOTADMIN}
+      SERVER_ADMIN_ACCESS_TOKEN: ${SERVICE_PASSWORD_RYOTADMIN}
       DATABASE_URL: "postgres://${SERVICE_USER_POSTGRESUSER:-${SERVICE_PASSWORD_POSTGRES:-password-unknown}}:postgres@postgres:5432/${SERVICE_USER_POSTGRESDB}"
