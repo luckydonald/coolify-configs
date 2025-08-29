@@ -7,9 +7,9 @@ services:
       - /data/ryot/postgres:/var/lib/postgresql/data
     environment:
       - TZ=Europe/Amsterdam
-      - POSTGRES_DB=${SERVICE_USER_POSTGRESDB:-postgres}
-      - POSTGRES_USER=${SERVICE_USER_POSTGRESUSER:-postgres}
-      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRES}
+      - POSTGRES_DB=${SERVICE_USER_POSTGRESDB:-ryot}
+      - POSTGRES_USER=${SERVICE_USER_POSTGRESUSER:-ryot}
+      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRESPASSWORD}
 
   ryot:
     image: ignisda/ryot:v9 # or ghcr.io/ignisda/ryot:v9
@@ -20,6 +20,6 @@ services:
       SERVICE_FQDN_RYOT_8000:
       TZ: ${TZ:-Europe/Amsterdam}
       SERVER_ADMIN_ACCESS_TOKEN: ${SERVICE_PASSWORD_RYOTADMIN}
-      DATABASE_URL: "postgres://${SERVICE_USER_POSTGRESUSER:-${SERVICE_PASSWORD_POSTGRES:-password-unknown}}@ryot-db:5432/${SERVICE_USER_POSTGRESDB}"
+      DATABASE_URL: "postgres://${SERVICE_USER_POSTGRESUSER:-ryot}${SERVICE_PASSWORD_POSTGRESPASSWORD}@ryot-db:5432/${SERVICE_USER_POSTGRESDB:-ryot}"
       UNKEY_API_ID: ${UNKEY_KEY_ID:-}
       SERVER_PRO_KEY: ${UNKEY_KEY_SECRET:-}
