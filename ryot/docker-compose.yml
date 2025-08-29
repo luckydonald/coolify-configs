@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
     environment:
       # see https://coolify.io/docs/knowledge-base/docker/compose#coolify-s-magic-environment-variables
-      SERVICE_FQDN_RYOT_8000:  # makes sure the routing works in Coolify,
+      SERVICE_FQDN_RYOT_8000: /  # makes sure the routing works in Coolify.
       PORT: 8000
 
       # anime and manga
@@ -72,6 +72,7 @@ services:
 
       # Used as the base URL when generating item links for the frontend. I.e. `"https://app.ryot.io"`.
       FRONTEND_URL: ${FRONTEND_URL:-${SERVICE_URL_RYOT:-https://app.ryot.io}}
+      CADDY_FRONTEND_TARGET: 127.0.0.1:3000
 
       # A message to be displayed on the dashboard.
       FRONTEND_DASHBOARD_MESSAGE: ${FRONTEND_DASHBOARD_MESSAGE:-}
@@ -122,6 +123,7 @@ services:
       SERVER_BACKEND_HOST: ${SERVER_BACKEND_HOST:-0.0.0.0}
       # The port number to bind the backend server to.
       SERVER_BACKEND_PORT: ${SERVER_BACKEND_PORT:-5000}
+      CADDY_BACKEND_TARGET: 127.0.0.1:${SERVER_BACKEND_PORT:-5000}
       # An array of URLs for CORS.
       SERVER_CORS_ORIGINS: ${SERVER_CORS_ORIGINS:-}
       # Disable all background jobs.
