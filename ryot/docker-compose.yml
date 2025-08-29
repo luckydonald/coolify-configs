@@ -1,6 +1,8 @@
+# see https://coolify.io/docs/get-started/contribute/service
+
 services:
   ryot-db:
-    image: postgres:16-alpine # at-least version 15 is required
+    image: postgres:${POSTGRES_VERSION:-16}-alpine # at-least version 15 is required
     restart: unless-stopped
     container_name: ryot-db
     volumes:
@@ -11,13 +13,14 @@ services:
       - POSTGRES_USER=${SERVICE_USER_POSTGRESUSER:-ryot}
       - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRESPASSWORD}
   ryot:
-    image: ignisda/ryot:v9 # or ghcr.io/ignisda/ryot:v9
+    image: ignisda/ryot:${RYOT_VERSION:-v9}
+    #  or: ghcr.io/ignisda/ryot:v9
     pull_policy: always
     container_name: ryot
     restart: unless-stopped
     environment:
-      SERVICE_FQDN_RYOT_8000:
-      TZ: ${TZ:-Europe/Amsterdam}
+      # see https://coolify.io/docs/knowledge-base/docker/compose#coolify-s-magic-environment-variables
+      SERVICE_FQDN_RYOT_8000:  # makes sure the routing works in Coolify,
 
       # anime and manga
 
@@ -110,6 +113,8 @@ services:
 
       # server
 
+      # Timezone to be used for cron jobs. Accepts values according to the IANA database. Defaults to GMT.
+      TZ: ${TZ:-Europe/Amsterdam}
       # An access token that can be used for admin operations.
       SERVER_ADMIN_ACCESS_TOKEN: ${SERVICE_PASSWORD_RYOTADMIN}
       # The host address to bind the backend server to.
@@ -126,6 +131,12 @@ services:
       SERVER_IS_DEMO_INSTANCE: ${SERVER_IS_DEMO_INSTANCE:-"false"}
       # The maximum file size in MB for user uploads.
       SERVER_MAX_FILE_SIZE_MB: ${SERVER_MAX_FILE_SIZE_MB:-70}
+      # The hours in which a media can be marked as seen again for a user. This
+      # is used so that the same media can not be used marked as started when
+      # it has been already marked as seen in the last `n` hours.
+      SERVER_PROGRESS_UPDATE_THRESHOLD: ${SERVER_PROGRESS_UPDATE_THRESHOLD:-2}
+      # Number of seconds to sleep before starting the server.
+      SERVER_SLEEP_BEFORE_STARTUP_SECONDS: ${SERVER_SLEEP_BEFORE_STARTUP_SECONDS:-0}
 
       # OpenID Connect
       # The client ID for OIDC authentication.
@@ -146,8 +157,25 @@ services:
       # The client ID for the Trakt importer. **Required** to enable Trakt importer.
       SERVER_IMPORTER_TRAKT_CLIENT_ID: ${SERVER_IMPORTER_TRAKT_CLIENT_ID:-}
 
+      # mailer
 
+      SERVER_SMTP_MAILBOX: ${SERVER_SMTP_MAILBOX:-Ryot <no-reply@mailer.io>}
+      SERVER_SMTP_PASSWORD: ${SERVER_SMTP_PASSWORD:-}
+      SERVER_SMTP_SERVER: ${SERVER_SMTP_SERVER:-}
+      SERVER_SMTP_USER: ${SERVER_SMTP_USER:-}
 
+      # users & accounts
+
+      USERS_ALLOW_REGISTRATION: ${USERS_ALLOW_REGISTRATION:-true}
+      USERS_DISABLE_LOCAL_AUTH: ${USERS_DISABLE_LOCAL_AUTH:-false}
+      USERS_TOKEN_VALID_FOR_DAYS: ${USERS_TOKEN_VALID_FOR_DAYS:-90}
+
+      # video games
+
+      # Settings related to GiantBomb.
+      VIDEO_GAMES_GIANT_BOMB_API_KEY: ${VIDEO_GAMES_GIANT_BOMB_API_KEY:-}
+      # Settings related to IGDB.
+      VIDEO_GAMES_IGDB_IMAGE_SIZE: ${VIDEO_GAMES_IGDB_IMAGE_SIZE:-t_original}
+      # Settings related to Twitch.
       VIDEO_GAMES_TWITCH_CLIENT_ID: ${VIDEO_GAMES_TWITCH_CLIENT_ID:-}
       VIDEO_GAMES_TWITCH_CLIENT_SECRET: ${VIDEO_GAMES_TWITCH_CLIENT_SECRET:-}
-      SERVER_IMPORTER_TRAKT_CLIENT_ID: ${SERVER_IMPORTER_TRAKT_CLIENT_ID:-}
