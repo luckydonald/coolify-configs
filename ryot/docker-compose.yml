@@ -150,7 +150,7 @@ services:
       # The pro key assigned to the user.
       SERVER_PRO_KEY: ${UNKEY_KEY_SECRET:-}
       # The key server id
-      UNKEY_API_ID: ${UNKEY_KEY_ID:-}
+      # UNKEY_API_ID: ${UNKEY_KEY_ID:-}
 
       # importer
 
