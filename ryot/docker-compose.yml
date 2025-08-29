@@ -22,3 +22,5 @@ services:
       TZ: ${TZ:-Europe/Amsterdam}
       SERVER_ADMIN_ACCESS_TOKEN: ${SERVICE_PASSWORD_RYOTADMIN}
       DATABASE_URL: "postgres://${SERVICE_USER_POSTGRESUSER:-${SERVICE_PASSWORD_POSTGRES:-password-unknown}}:postgres@postgres:5432/${SERVICE_USER_POSTGRESDB}"
+      UNKEY_API_ID: ${UNKEY_KEY_ID:-}
+      SERVER_PRO_KEY: ${UNKEY_KEY_SECRET:-}
