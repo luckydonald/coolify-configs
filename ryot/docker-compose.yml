@@ -16,8 +16,6 @@ services:
     pull_policy: always
     container_name: ryot
     restart: unless-stopped
-    ports:
-      - "8000:8000"
     environment:
       TZ: ${TZ:-Europe/Amsterdam}
       SERVER_ADMIN_ACCESS_TOKEN: ${SERVICE_PASSWORD_RYOTADMIN}
