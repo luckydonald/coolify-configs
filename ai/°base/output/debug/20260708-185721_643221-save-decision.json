@@ -1,0 +1,19 @@
+{
+  "hook_event_name": "PostToolUse",
+  "session_id": "63b9fe61-384e-4256-aeb1-eb818777e5fd",
+  "timestamp": "2026-07-08T16:57:21.519Z",
+  "cwd": "/home/user/git/luckydonald/base",
+  "tool_name": "AskUserQuestion",
+  "tool_input": {
+    "question": "This is a demo of the ask_user tool's question types. This first question shows a multiple-choice format with a recommended option pre-marked and freeform still allowed as a fallback (the UI auto-adds an 'other' input). Which type would you like me to demonstrate next?",
+    "choices": [
+      "Multiple-choice, no freeform fallback (Recommended)",
+      "Pure freeform (no choices at all)",
+      "That's enough, I've seen it"
+    ]
+  },
+  "tool_result": {
+    "result_type": "success",
+    "text_result_for_llm": "User selected: Multiple-choice, no freeform fallback (Recommended)"
+  }
+}

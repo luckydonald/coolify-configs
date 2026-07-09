@@ -1,0 +1,211 @@
+{
+  "session_id": "e52e3425-7780-419c-b372-3e4398d0d287",
+  "transcript_path": "/Users/user/.claude/projects/-Users-user-Documents-programming-Python-base/e52e3425-7780-419c-b372-3e4398d0d287.jsonl",
+  "cwd": "/Users/user/Documents/programming/Python/base",
+  "permission_mode": "plan",
+  "effort": {
+    "level": "medium"
+  },
+  "hook_event_name": "PostToolUse",
+  "tool_name": "AskUserQuestion",
+  "tool_input": {
+    "questions": [
+      {
+        "question": "Which environment are you testing the hook integration in?",
+        "header": "Environment",
+        "options": [
+          {
+            "label": "Local dev",
+            "description": "Running hooks locally against a dev server or local process."
+          },
+          {
+            "label": "CI/CD pipeline",
+            "description": "Hooks fire as part of an automated build or deploy pipeline."
+          },
+          {
+            "label": "Staging",
+            "description": "Hooks are wired up in a staging environment that mirrors production."
+          },
+          {
+            "label": "Production",
+            "description": "Testing live hooks in the production environment."
+          }
+        ],
+        "multiSelect": false
+      },
+      {
+        "question": "What type of hook event are you primarily testing?",
+        "header": "Hook type",
+        "options": [
+          {
+            "label": "Pre-commit / pre-push",
+            "description": "Git hooks that run before a commit or push completes."
+          },
+          {
+            "label": "Webhook (HTTP)",
+            "description": "An outbound HTTP callback triggered by some event."
+          },
+          {
+            "label": "Tool-call hook",
+            "description": "Claude Code hooks that intercept tool calls (e.g. user-prompt-submit-hook)."
+          },
+          {
+            "label": "Post-merge / CI trigger",
+            "description": "Hooks that fire after a merge or as a CI step."
+          }
+        ],
+        "multiSelect": false
+      },
+      {
+        "question": "What is the primary failure mode you're trying to catch?",
+        "header": "Failure mode",
+        "options": [
+          {
+            "label": "Hook not firing at all",
+            "description": "The hook doesn't trigger when it should."
+          },
+          {
+            "label": "Wrong payload / data",
+            "description": "The hook fires but the data it receives or emits is incorrect."
+          },
+          {
+            "label": "Timing / ordering issue",
+            "description": "The hook fires too early, too late, or out of order."
+          },
+          {
+            "label": "Auth / permissions failure",
+            "description": "The hook fires but is rejected due to missing or wrong credentials."
+          }
+        ],
+        "multiSelect": true
+      },
+      {
+        "question": "How mature is the hook integration you're testing?",
+        "header": "Maturity",
+        "options": [
+          {
+            "label": "Brand new",
+            "description": "First time wiring this hook up — still figuring out the basics."
+          },
+          {
+            "label": "Existing, recently changed",
+            "description": "The hook worked before; something was modified and you're verifying it still works."
+          },
+          {
+            "label": "Regression check",
+            "description": "No changes were made; you're confirming nothing broke."
+          }
+        ],
+        "multiSelect": false
+      }
+    ],
+    "answers": {
+      "Which environment are you testing the hook integration in?": "Local dev",
+      "What type of hook event are you primarily testing?": "AI Question hook (this is 'other' btw)",
+      "What is the primary failure mode you're trying to catch?": "Wrong payload / data, This is 'something else' checked and manually filled.",
+      "How mature is the hook integration you're testing?": "Pretty good. One more multi-select please. Also one with code snippets. Need to test those, too."
+    },
+    "annotations": {}
+  },
+  "tool_response": {
+    "questions": [
+      {
+        "question": "Which environment are you testing the hook integration in?",
+        "header": "Environment",
+        "options": [
+          {
+            "label": "Local dev",
+            "description": "Running hooks locally against a dev server or local process."
+          },
+          {
+            "label": "CI/CD pipeline",
+            "description": "Hooks fire as part of an automated build or deploy pipeline."
+          },
+          {
+            "label": "Staging",
+            "description": "Hooks are wired up in a staging environment that mirrors production."
+          },
+          {
+            "label": "Production",
+            "description": "Testing live hooks in the production environment."
+          }
+        ],
+        "multiSelect": false
+      },
+      {
+        "question": "What type of hook event are you primarily testing?",
+        "header": "Hook type",
+        "options": [
+          {
+            "label": "Pre-commit / pre-push",
+            "description": "Git hooks that run before a commit or push completes."
+          },
+          {
+            "label": "Webhook (HTTP)",
+            "description": "An outbound HTTP callback triggered by some event."
+          },
+          {
+            "label": "Tool-call hook",
+            "description": "Claude Code hooks that intercept tool calls (e.g. user-prompt-submit-hook)."
+          },
+          {
+            "label": "Post-merge / CI trigger",
+            "description": "Hooks that fire after a merge or as a CI step."
+          }
+        ],
+        "multiSelect": false
+      },
+      {
+        "question": "What is the primary failure mode you're trying to catch?",
+        "header": "Failure mode",
+        "options": [
+          {
+            "label": "Hook not firing at all",
+            "description": "The hook doesn't trigger when it should."
+          },
+          {
+            "label": "Wrong payload / data",
+            "description": "The hook fires but the data it receives or emits is incorrect."
+          },
+          {
+            "label": "Timing / ordering issue",
+            "description": "The hook fires too early, too late, or out of order."
+          },
+          {
+            "label": "Auth / permissions failure",
+            "description": "The hook fires but is rejected due to missing or wrong credentials."
+          }
+        ],
+        "multiSelect": true
+      },
+      {
+        "question": "How mature is the hook integration you're testing?",
+        "header": "Maturity",
+        "options": [
+          {
+            "label": "Brand new",
+            "description": "First time wiring this hook up — still figuring out the basics."
+          },
+          {
+            "label": "Existing, recently changed",
+            "description": "The hook worked before; something was modified and you're verifying it still works."
+          },
+          {
+            "label": "Regression check",
+            "description": "No changes were made; you're confirming nothing broke."
+          }
+        ],
+        "multiSelect": false
+      }
+    ],
+    "answers": {
+      "Which environment are you testing the hook integration in?": "Local dev",
+      "What type of hook event are you primarily testing?": "AI Question hook (this is 'other' btw)",
+      "What is the primary failure mode you're trying to catch?": "Wrong payload / data, This is 'something else' checked and manually filled.",
+      "How mature is the hook integration you're testing?": "Pretty good. One more multi-select please. Also one with code snippets. Need to test those, too."
+    },
+    "annotations": {}
+  },
+  "tool_use_id": "toolu_01EYwepAX1X8p5sQp4wxRzEr",
+  "duration_ms": 0
+}

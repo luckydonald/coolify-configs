@@ -1,0 +1,17 @@
+Repo: /home/user/git/luckydonald/base
+
+I need deep understanding of how command permission strings like "Bash(git status:*)" and "Read(**/.env*)" currently flow through this repo's AI tool settings system, so I can redesign the format to work for both Claude Code and OpenAI Codex.
+
+Please investigate and report back (be thorough, include full file contents where small, or exact line ranges for larger files):
+
+1. Read `.claude/hooks/permission-check.py` in full. This is the PermissionRequest hook shared between Claude and Codex (per `.codex/hooks.json` and `.claude/settings.json`). Explain exactly how it parses/matches permission strings such as `Bash(git status:*)`, `Bash(tree:*)`, `Read(**/.env*)`. What syntax rules does it support (wildcards, prefixes, tool name prefix like `Bash(...)`/`Read(...)`/`Skill(...)`)? Does it get invoked by both Claude's PermissionRequest hook input format AND Codex's permission_request hook input format? How does it read the `permissions.allow`/`permissions.deny` lists (from which file)?
+
+2. Read `scripts/°base/ai/settings/sync.py` in full (already read by me, but re-verify) — focus specifically on: `_CORE_SHARED_KEYS`, `_normalize_native`, `_merge`, `render_claude`, `render_codex_hooks`, `_apply_or_check`, `_load_layer`. Confirm that `permissions` (allow/deny) currently is only ever written to `.claude/settings.json` (via `render_claude`) and is UNTOUCHED by `render_codex_hooks` — i.e. Codex's `.codex/hooks.json` never receives permissions today. Also check whether `.codex/config.toml` is written to at all by sync.py currently (besides the one-time `codex_hooks` feature-flag migration) — confirm it does NOT currently receive any generated permissions/hooks content (must stay a file the script only reads and does a narrow text migration on, never overwrites wholesale).
+
+3. Read `scripts/°base/tests/test_ai_settings_sync.py` in full and summarize what's tested regarding permissions/hooks rendering, so I know what existing test patterns to follow/extend.
+
+4. Search the repo for any existing "neutral"/"canonical" permission format ideas, e.g. grep for `type.*bash`, `"type": "bash"`, or any TODO/comment about permission format redesign, or any other file under `ai/tool-settings/` besides `settings.json`/`settings.local.json`. Also check `ai/°base/AGENTS.md` for any documented conventions about `ai/tool-settings/` or permission handling.
+
+5. Check how Codex's PermissionRequest hook is actually invoked — i.e., does Codex call the same `permission-check.py` for EVERY tool call needing approval, or does Codex ALSO have its own native permission/approval mechanism (approval_policy, sandbox_mode, permission profiles in config.toml) that operates independently of the hook? Look at `.codex/hooks.json` matcher `Bash|shell|unified_exec` and cross-reference with what you know is in `ai/references/https/developers.openai.com/codex/permissions.md` (already fetched, don't re-fetch, just reason about it if relevant) — the point is: is command-level allow/deny ONLY enforced via this custom hook script (reading the shared settings.json permissions), for both tools, or does Codex have a second, separate, native mechanism that would also need the permissions data in a different Codex-native format?
+
+Report with concrete file paths, function names, and line numbers. Keep the report well organized under the 5 numbered items above. Do not modify any files.

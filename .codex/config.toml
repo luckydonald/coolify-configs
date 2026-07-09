@@ -1,0 +1,25 @@
+# [plugins].*.enabled below is managed by scripts/°base/ai/settings/sync.py from ai/tool-settings/settings.json's enabledPlugins; other content here is preserved.
+
+[plugins."openai-developers@openai-developers"]
+enabled = true
+
+# --- BEGIN generated mcp_servers (scripts/°base/ai/settings/sync.py) ---
+
+[mcp_servers."bugsink"]
+enabled = false
+command = "npx"
+args = ["-y", "envmcp", "--env-file", "ai/.env", "npx", "-y", "bugsink-mcp"]
+
+[mcp_servers."bugsink".tools."get_issue"]
+approval_mode = "auto"
+
+[mcp_servers."bugsink".tools."list_issues"]
+approval_mode = "auto"
+
+[mcp_servers."bugsink".tools."list_projects"]
+approval_mode = "auto"
+
+# --- END generated mcp_servers ---
+
+[plugins."skill-creator@claude-plugins-official"]
+enabled = true

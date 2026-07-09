@@ -1,0 +1,261 @@
+#!/usr/bin/env python3
+"""Shared helpers for the prompt-log hooks (save-prompt, save-decision).
+
+Both hooks append a markdown entry to a per-repo prompt log (typically
+`ai/query.md`) and auto-commit only that file, while preserving any user-staged
+edits to the same file via :mod:`merge_staged`.
+"""
+from __future__ import annotations
+
+import datetime
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+# Sibling-module import (this package can't be imported as a real package
+# because parent dirs contain non-ASCII / hyphenated names).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from merge_staged import merge as _merge_lines  # noqa: E402
+
+
+def read_payload() -> dict:
+    """Parse the JSON payload from stdin, returning ``{}`` on any error."""
+    try:
+        return json.load(sys.stdin)
+    except (json.JSONDecodeError, ValueError):
+        return {}
+
+
+def dump_debug_payload(payload: dict, hook_name: str) -> None:
+    """If ai[/°base]/.debug exists, write payload JSON to ai[/°base]/output/debug/."""
+    subproject = _subproject_root()
+    git_root_str = _git_text("rev-parse", "--show-toplevel")
+    git_root = Path(git_root_str) if git_root_str else subproject
+    is_base = _is_inside_base_repo(subproject) or _is_inside_base_repo(git_root)
+    ai_prefix = "ai/°base" if is_base else "ai"
+    if not (subproject / ai_prefix / ".debug").is_file():
+        return
+    ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S_%f")
+    debug_dir = subproject / ai_prefix / "output" / "debug"
+    debug_dir.mkdir(parents=True, exist_ok=True)
+    (debug_dir / f"{ts}-{hook_name}.json").write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+
+
+def slugify(text: str, *, max_len: int = 60, fallback: str = "untitled") -> str:
+    """First non-empty line → lowercase, non-alphanumeric runs → ``-``, capped."""
+    line = ""
+    for raw in (text or "").splitlines():
+        candidate = raw.strip().lstrip("#").strip()
+        if candidate:
+            line = candidate
+            break
+    if not line:
+        return fallback
+    slug = re.sub(r"[^a-z0-9]+", "-", line.lower()).strip("-")[:max_len].rstrip("-")
+    return slug or fallback
+
+
+def _git_text(*args: str) -> str:
+    result = subprocess.run(["git", *args], capture_output=True, text=True)
+    return (result.stdout or "").strip()
+
+
+def _git_bytes(*args: str) -> bytes:
+    return subprocess.run(["git", *args], capture_output=True).stdout or b""
+
+
+def _is_inside_base_repo(subproject_root: Path) -> bool:
+    """True iff we are inside the `base` meta-repo: subproject directory named
+    `base`, with origin pointing at luckydonald/base.
+
+    In a stand-alone consuming repo, subproject_root == git_root and the name
+    won't be `base`, so this returns False. In a monorepo, subproject_root is
+    the per-project directory below the git root and again won't match.
+    """
+    if subproject_root.name != "base":
+        return False
+    origin = _git_text("remote", "get-url", "origin")
+    return bool(re.search(r"(^|[:/])luckydonald/base(\.git)?/?$", origin, re.I))
+
+
+def base_ai_commit_subject(msg: str) -> str:
+    """Prefix base-repo AI auto-commit subjects with ``[base] ``."""
+    if msg.startswith("[base] "):
+        return msg
+    if _is_inside_base_repo(_subproject_root()):
+        return f"[base] {msg}"
+    return msg
+
+
+def running_copilot() -> bool:
+    """True when this process is actually running under Copilot CLI, per its
+    own env markers. Unlike Claude's/Codex's markers, these are set directly
+    by the Copilot CLI process itself for every hook invocation."""
+    return bool(os.environ.get("COPILOT_CLI") or os.environ.get("COPILOT_AGENT_SESSION_ID"))
+
+
+def is_cross_tool_duplicate(ai_tool: str) -> bool:
+    """True when this hook invocation is a redundant duplicate caused by
+    Copilot CLI's unconditional cross-read of `.claude/settings.json`
+    alongside its own native `.github/hooks/*.json` config: when both files
+    define a hook for the same event, Copilot runs *both*, once per config
+    source. The two firings differ only in the baked-in ``ai_tool`` CLI
+    argument (``'copilot'`` from the native config, ``'claude'``/``'codex'``
+    from the cross-read Claude config) — this detects the mismatch so the
+    caller can skip the redundant one.
+
+    Detection is intentionally narrow: it only fires when the environment
+    unambiguously marks the *actually running* harness as Copilot
+    (``COPILOT_CLI``/``COPILOT_AGENT_SESSION_ID``), since ambient variables
+    like ``CLAUDE_CODE_SSE_PORT`` can leak into a Copilot CLI process from
+    the surrounding shell/IDE and are not reliable signals on their own.
+    Returns ``False`` (never a duplicate) for Claude, Codex, and any other
+    harness, and for manual/test invocations where no such env var is set.
+    """
+    running_copilot_ = running_copilot()
+    return running_copilot_ and ai_tool != "copilot"
+
+
+def _subproject_root() -> Path:
+    """The directory Claude was launched from. Claude Code sets
+    ``CLAUDE_PROJECT_DIR`` for hook commands; manual invocations and the test
+    suite fall back to the current working directory."""
+    raw = os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
+    return Path(raw).resolve()
+
+
+def _chdir_to_git_root() -> Path:
+    root = _git_text("rev-parse", "--show-toplevel")
+    if not root:
+        sys.exit(1)
+    os.chdir(root)
+    return Path(root)
+
+
+def _read_by_issue(subproject: Path, ai_prefix: str) -> str:
+    """Read the issue key from <subproject>/<ai_prefix>/.by-issue.
+
+    Returns the stripped content (e.g. ``PROJ-1234``) or ``""`` when the file
+    is absent or empty."""
+    by_issue = subproject / ai_prefix / ".by-issue"
+    if by_issue.is_file():
+        return by_issue.read_text(encoding="utf-8").strip()
+    return ""
+
+
+def resolve_log_path(default_relpath: str, base_relpath: str) -> Path:
+    """Return the absolute AI-artifact path under the *subproject* root (with
+    the base-repo reroute and optional ``by-issue/<KEY>/`` sub-directory
+    applied) and cd to the git root so subsequent git operations resolve
+    relpaths uniformly. Creates parent directories as needed.
+
+    When ``ai[/°base]/.by-issue`` exists and contains an issue key such as
+    ``PROJ-1234``, every path is routed through
+    ``ai[/°base]/by-issue/PROJ-1234/…`` instead of ``ai[/°base]/…``."""
+    subproject = _subproject_root()
+    git_root = _chdir_to_git_root()
+    is_base = _is_inside_base_repo(subproject) or _is_inside_base_repo(git_root)
+    ai_prefix = "ai/°base" if is_base else "ai"
+    relpath = base_relpath if is_base else default_relpath
+
+    issue = _read_by_issue(subproject, ai_prefix)
+    if issue:
+        # Insert by-issue/<KEY>/ immediately after the ai prefix.
+        rest = relpath[len(ai_prefix) + 1:]  # strip "ai[/°base]/"
+        relpath = f"{ai_prefix}/by-issue/{issue}/{rest}"
+
+    log_path = (subproject / relpath).resolve()
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    return log_path
+
+
+def _staged_snapshot(relpath: str) -> tuple[Path, Path] | None:
+    """If ``relpath`` is staged with content different from HEAD, snapshot the
+    HEAD and staged blobs to temp files. Returns ``(base_tmp, staged_tmp)`` or
+    ``None`` when there is nothing to preserve."""
+    staged_line = _git_text("ls-files", "--stage", relpath)
+    if not staged_line:
+        return None
+    staged_hash = staged_line.split()[1]
+
+    head_line = _git_text("ls-tree", "HEAD", relpath)
+    head_hash = head_line.split()[2] if head_line else ""
+    if staged_hash == head_hash:
+        return None
+
+    base_tmp = Path(tempfile.mkstemp(prefix="prompt-log-base-")[1])
+    staged_tmp = Path(tempfile.mkstemp(prefix="prompt-log-staged-")[1])
+    base_tmp.write_bytes(_git_bytes("cat-file", "blob", head_hash) if head_hash else b"")
+    staged_tmp.write_bytes(_git_bytes("cat-file", "blob", staged_hash))
+    return base_tmp, staged_tmp
+
+
+def _commit_message(template_relpath: str, default_msg: str) -> str:
+    # Templates live alongside the AI artifacts, so they're subproject-scoped
+    # (relevant in monorepos where cwd is the git root, not the subproject).
+    template = _subproject_root() / template_relpath
+    if not template.is_file():
+        return base_ai_commit_subject(default_msg)
+    text = template.read_text(encoding="utf-8").replace("\n", "").replace("\r", "").strip()
+    return base_ai_commit_subject(text or default_msg)
+
+
+def _restore_staged(snap: tuple[Path, Path], relpath: str) -> None:
+    base_tmp, staged_tmp = snap
+    try:
+        new_head_bytes = _git_bytes("show", f"HEAD:{relpath}")
+        new_head_lines = new_head_bytes.decode("utf-8", errors="replace").splitlines(keepends=True)
+        base_lines = base_tmp.read_text(encoding="utf-8", errors="replace").splitlines(keepends=True)
+        staged_lines = staged_tmp.read_text(encoding="utf-8", errors="replace").splitlines(keepends=True)
+
+        merged = _merge_lines(base_lines, staged_lines, new_head_lines)
+        merged_path = Path(tempfile.mkstemp(prefix="prompt-log-merged-")[1])
+        try:
+            merged_path.write_text("".join(merged), encoding="utf-8")
+            new_blob = _git_text("hash-object", "-w", str(merged_path))
+            if new_blob:
+                subprocess.run(
+                    ["git", "update-index", "--cacheinfo", f"100644,{new_blob},{relpath}"],
+                    capture_output=True,
+                )
+        finally:
+            merged_path.unlink(missing_ok=True)
+    finally:
+        base_tmp.unlink(missing_ok=True)
+        staged_tmp.unlink(missing_ok=True)
+
+
+def append_and_commit(
+    log_path: Path,
+    content: str,
+    *,
+    commit_template_relpath: str,
+    default_commit_msg: str,
+    extra_paths: tuple[Path, ...] = (),
+) -> None:
+    """Append ``content`` to ``log_path``, commit only those AI artifact files,
+    then re-apply any user-staged edits to the log on top of the new HEAD."""
+    relpath = str(log_path.relative_to(Path.cwd()))
+    extra_relpaths = [str(path.relative_to(Path.cwd())) for path in extra_paths]
+    snap = _staged_snapshot(relpath)
+
+    with log_path.open("a", encoding="utf-8") as f:
+        f.write(content)
+
+    msg = _commit_message(commit_template_relpath, default_commit_msg)
+    # `git commit --only` requires the path to be tracked, so make sure the
+    # file is in the index first. Idempotent on already-tracked files.
+    subprocess.run(["git", "add", "--", relpath, *extra_relpaths], capture_output=True)
+    subprocess.run(
+        ["git", "commit", "--no-verify", "--only", relpath, *extra_relpaths, "-m", msg],
+        capture_output=True,
+    )
+
+    if snap is not None:
+        _restore_staged(snap, relpath)

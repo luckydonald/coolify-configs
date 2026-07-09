@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "hooks": {
+    "PermissionRequest": [
+      {
+        "matcher": "Bash|shell|unified_exec",
+        "hooks": [
+          {
+            "type": "command",
+            "bash": "python3 \"$(git rev-parse --show-toplevel)/.claude/hooks/permission-check.py\"",
+            "timeoutSec": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "bash": "python3 \"$(git rev-parse --show-toplevel)/scripts/°base/ai/settings/sync.py\""
+          },
+          {
+            "type": "command",
+            "bash": "\"$(git rev-parse --show-toplevel)/scripts/°base/init/checkout.sh\""
+          },
+          {
+            "type": "command",
+            "bash": "python3 \"$(git rev-parse --show-toplevel)/scripts/°base/ai/hooks/record-memory/hook.py\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "AskUserQuestion|request_user_input|ask_user",
+        "hooks": [
+          {
+            "type": "command",
+            "bash": "\"$(git rev-parse --show-toplevel)/scripts/°base/git/hooks/tool_path.sh\" uv run --project \"$(git rev-parse --show-toplevel)/scripts/°base\" python \"$(git rev-parse --show-toplevel)/scripts/°base/ai/hooks/save-decision/hook.py\" 'copilot'"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|Bash|shell|unified_exec",
+        "hooks": [
+          {
+            "type": "command",
+            "bash": "python3 \"$(git rev-parse --show-toplevel)/scripts/°base/ai/hooks/record-memory/hook.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|ExitPlanMode|create|edit|exit_plan_mode",
+        "hooks": [
+          {
+            "type": "command",
+            "bash": "python3 \"$(git rev-parse --show-toplevel)/scripts/°base/ai/hooks/save-plan/hook.py\" 'copilot'"
+          }
+        ]
+      },
+      {
+        "matcher": "TodoWrite|update_todo|TaskCreate|TaskUpdate",
+        "hooks": [
+          {
+            "type": "command",
+            "bash": "python3 \"$(git rev-parse --show-toplevel)/scripts/°base/ai/hooks/save-plan/hook.py\" 'copilot'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "bash": "python3 \"$(git rev-parse --show-toplevel)/scripts/°base/ai/hooks/save-plan/hook.py\" 'copilot'"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "bash": "python3 \"$(git rev-parse --show-toplevel)/scripts/°base/ai/hooks/save-prompt/hook.py\" 'copilot'"
+          }
+        ]
+      }
+    ]
+  }
+}

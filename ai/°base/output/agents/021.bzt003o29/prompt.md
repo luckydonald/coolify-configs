@@ -1,0 +1,1 @@
+Background command "Re-run update-history-master against ssp with new logging" completed (exit code 0)

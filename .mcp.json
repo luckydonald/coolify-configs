@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "bugsink": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "envmcp",
+        "--env-file",
+        "ai/.env",
+        "npx",
+        "-y",
+        "bugsink-mcp"
+      ]
+    }
+  }
+}

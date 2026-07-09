@@ -1,0 +1,73 @@
+{
+  "session_id": "019ef9ce-7e85-7613-b136-9744466fe19d",
+  "turn_id": "019ef9cf-2338-73c3-b42b-5865c6ef3eed",
+  "transcript_path": "/Users/user/.codex/sessions/2026/06/24/rollout-2026-06-24T15-25-20-019ef9ce-7e85-7613-b136-9744466fe19d.jsonl",
+  "cwd": "/Users/user/Documents/programming/Python/base",
+  "hook_event_name": "PostToolUse",
+  "model": "gpt-5.4-mini",
+  "permission_mode": "default",
+  "tool_name": "request_user_input",
+  "tool_input": {
+    "questions": [
+      {
+        "header": "Surface",
+        "id": "surface",
+        "question": "Which hook surface are you checking right now?",
+        "options": [
+          {
+            "label": "Save-decision",
+            "description": "Exercise the AskUserQuestion / request_user_input flow that writes to `ai/query.md`."
+          },
+          {
+            "label": "Save-plan",
+            "description": "Exercise the plan-capture flow for `Write`, `ExitPlanMode`, or `Stop`."
+          },
+          {
+            "label": "Memory",
+            "description": "Exercise the memory sync / deletion path."
+          }
+        ]
+      },
+      {
+        "header": "Input",
+        "id": "input_shape",
+        "question": "What kind of integration input should I focus on?",
+        "options": [
+          {
+            "label": "Codex payload",
+            "description": "Validate the `request_user_input` JSON shape and answer normalization."
+          },
+          {
+            "label": "Claude payload",
+            "description": "Validate the `AskUserQuestion` payload and annotations path."
+          },
+          {
+            "label": "Both",
+            "description": "Compare both formats and make sure routing stays consistent."
+          }
+        ]
+      },
+      {
+        "header": "Goal",
+        "id": "goal",
+        "question": "What do you want the questions to help check?",
+        "options": [
+          {
+            "label": "Happy path",
+            "description": "Confirm the hook records and commits a normal successful interaction."
+          },
+          {
+            "label": "Edge cases",
+            "description": "Probe timeouts, notes-only, multi-select, and malformed input."
+          },
+          {
+            "label": "Regression hunt",
+            "description": "Try to flush out routing bugs, wrong prefixes, or broken file output."
+          }
+        ]
+      }
+    ]
+  },
+  "tool_response": "{\"answers\":{\"goal\":{\"answers\":[\"None of the above\",\"user_note: Pretty much want to check it's now formatting correctly, nothing for you to do, really, then this question. Afterwards I will shut you down, lol. Btw, this is the automatic \\\"None of the above\\\" choice.\"]},\"surface\":{\"answers\":[\"Save-decision\"]},\"input_shape\":{\"answers\":[\"Codex payload\",\"user_note: You shouldn't really focus on the integration, I will do. Btw, this is a note under an existing answer.\"]}}}",
+  "tool_use_id": "call_wCRGJ5QKYcqn8miQiJzrr0as"
+}

@@ -1,0 +1,19 @@
+{
+  "hook_event_name": "PostToolUse",
+  "session_id": "63b9fe61-384e-4256-aeb1-eb818777e5fd",
+  "timestamp": "2026-07-08T16:59:56.170Z",
+  "cwd": "/home/user/git/luckydonald/base",
+  "tool_name": "AskUserQuestion",
+  "tool_input": {
+    "allow_freeform": false,
+    "choices": [
+      "Got it, that's all the demo types",
+      "Show me exit_plan_mode's approval menu instead"
+    ],
+    "question": "Correct — no, there's no true multi-select (checkbox) type. `ask_user` only supports single-select radio-style `choices` (with optional freeform fallback) or pure freeform text; there's no way to pick several options at once in one question. That covers all the `ask_user` variants. Want to see anything else?"
+  },
+  "tool_result": {
+    "result_type": "success",
+    "text_result_for_llm": "User selected: Show me exit_plan_mode's approval menu instead"
+  }
+}

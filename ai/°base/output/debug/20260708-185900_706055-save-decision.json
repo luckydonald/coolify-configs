@@ -1,0 +1,15 @@
+{
+  "hook_event_name": "PostToolUse",
+  "session_id": "63b9fe61-384e-4256-aeb1-eb818777e5fd",
+  "timestamp": "2026-07-08T16:59:00.583Z",
+  "cwd": "/home/user/git/luckydonald/base",
+  "tool_name": "AskUserQuestion",
+  "tool_input": {
+    "allow_freeform": true,
+    "question": "This third question demonstrates pure freeform mode — no `choices` array at all, just an open text field. What's one thing you'd like to type here as a test (or just say \"done\")?"
+  },
+  "tool_result": {
+    "result_type": "success",
+    "text_result_for_llm": "User responded: now do multi-choice."
+  }
+}

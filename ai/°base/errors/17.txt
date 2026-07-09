@@ -1,0 +1,24 @@
+(all-my-storage) user@fedora:~/git/luckydonald/AllMyStorage$ ./scripts/°base/git/rebase_strip_claude_authorship.py
+From https://github.com/luckydonald/AllMyStorage
+ * branch              mane       -> FETCH_HEAD
+Rebasing onto merge-base cbc4dd7897e31c16732c2f511cb58a8209de5627 with origin/mane, stripping claude[bot] authorship...
+Auto-merging ai/query.md
+CONFLICT (content): Merge conflict in ai/query.md
+error: could not apply 3c6c4704... [base] git: ai: Run: Added a script to rebase onto origin/mane and rewrite claude[bot] authorship.
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+Could not apply 3c6c4704... # [base] git: ai: Run: Added a script to rebase onto origin/mane and rewrite claude[bot] authorship.
+Traceback (most recent call last):
+  File "/home/user/git/luckydonald/AllMyStorage/./scripts/°base/git/rebase_strip_claude_authorship.py", line 62, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/user/git/luckydonald/AllMyStorage/./scripts/°base/git/rebase_strip_claude_authorship.py", line 57, in main
+    subprocess.run(["git", "rebase", merge_base, "--exec", exec_cmd], check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', 'rebase', 'cbc4dd7897e31c16732c2f511cb58a8209de5627', '--exec', '/home/user/git/luckydonald/AllMyStorage/.venv/bin/python3 /home/user/git/luckydonald/AllMyStorage/scripts/°base/git/rebase_strip_claude_authorship.py --amend-step']' returned non-zero exit status 1.

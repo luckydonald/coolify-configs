@@ -1,0 +1,70 @@
+{
+  "session_id": "5f38f4ba-0ce0-4e78-b9e6-2e81d245a371",
+  "transcript_path": "/home/user/.claude/projects/-home-user-git-luckydonald-base/5f38f4ba-0ce0-4e78-b9e6-2e81d245a371.jsonl",
+  "cwd": "/home/user/git/luckydonald/base",
+  "prompt_id": "e65ab03c-6b4e-446d-9d21-0311edf17d82",
+  "permission_mode": "auto",
+  "effort": {
+    "level": "medium"
+  },
+  "hook_event_name": "PostToolUse",
+  "tool_name": "AskUserQuestion",
+  "tool_input": {
+    "questions": [
+      {
+        "question": "For the recovery log, when should the entry (before-state table + undo commands) actually get written to `.rebase-recovery.tmp` and printed?",
+        "header": "Write timing",
+        "options": [
+          {
+            "label": "Before mutating anything (Recommended)",
+            "description": "Snapshot refs and write the full entry (before-state + undo commands) at the very start, before any ref is touched — so recovery info survives even if the process crashes or is killed mid-operation. The 'Commit now' column is filled in with a second, separate summary printed to stdout at the end (file itself isn't rewritten, since undo commands only ever need the 'before' shas).",
+            "preview": "1. snapshot refs\n2. write .rebase-recovery.tmp entry + print it   <- crash-safe point\n3. run the actual operation\n4. print a short before/after summary to stdout"
+          },
+          {
+            "label": "After the operation completes",
+            "description": "Run the operation first, then write one entry showing both 'before' and 'now' columns together in the file and stdout. Simpler (one write, matches your example table exactly with both columns populated), but a crash mid-operation leaves no recovery record at all."
+          }
+        ],
+        "multiSelect": false
+      }
+    ],
+    "answers": {
+      "For the recovery log, when should the entry (before-state table + undo commands) actually get written to `.rebase-recovery.tmp` and printed?": "Before mutating anything (Recommended)"
+    },
+    "annotations": {
+      "For the recovery log, when should the entry (before-state table + undo commands) actually get written to `.rebase-recovery.tmp` and printed?": {
+        "preview": "1. snapshot refs\n2. write .rebase-recovery.tmp entry + print it   <- crash-safe point\n3. run the actual operation\n4. print a short before/after summary to stdout"
+      }
+    }
+  },
+  "tool_response": {
+    "questions": [
+      {
+        "question": "For the recovery log, when should the entry (before-state table + undo commands) actually get written to `.rebase-recovery.tmp` and printed?",
+        "header": "Write timing",
+        "options": [
+          {
+            "label": "Before mutating anything (Recommended)",
+            "description": "Snapshot refs and write the full entry (before-state + undo commands) at the very start, before any ref is touched — so recovery info survives even if the process crashes or is killed mid-operation. The 'Commit now' column is filled in with a second, separate summary printed to stdout at the end (file itself isn't rewritten, since undo commands only ever need the 'before' shas).",
+            "preview": "1. snapshot refs\n2. write .rebase-recovery.tmp entry + print it   <- crash-safe point\n3. run the actual operation\n4. print a short before/after summary to stdout"
+          },
+          {
+            "label": "After the operation completes",
+            "description": "Run the operation first, then write one entry showing both 'before' and 'now' columns together in the file and stdout. Simpler (one write, matches your example table exactly with both columns populated), but a crash mid-operation leaves no recovery record at all."
+          }
+        ],
+        "multiSelect": false
+      }
+    ],
+    "answers": {
+      "For the recovery log, when should the entry (before-state table + undo commands) actually get written to `.rebase-recovery.tmp` and printed?": "Before mutating anything (Recommended)"
+    },
+    "annotations": {
+      "For the recovery log, when should the entry (before-state table + undo commands) actually get written to `.rebase-recovery.tmp` and printed?": {
+        "preview": "1. snapshot refs\n2. write .rebase-recovery.tmp entry + print it   <- crash-safe point\n3. run the actual operation\n4. print a short before/after summary to stdout"
+      }
+    }
+  },
+  "tool_use_id": "toolu_01X81AnvTmByHzPVQLSJ335N",
+  "duration_ms": 0
+}

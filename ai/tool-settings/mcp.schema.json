@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/luckydonald/base/ai/tool-settings/mcp.schema.json",
+  "title": "Neutral MCP server config (ai/tool-settings/settings.json's \"mcp\" key)",
+  "description": "Synced by scripts/°base/ai/settings/sync.py into .mcp.json (Claude) and .codex/config.toml's [mcp_servers.*] tables (Codex).",
+  "type": "object",
+  "properties": {
+    "tools": {
+      "type": "object",
+      "description": "Named, reusable command-prefix snippets (e.g. wrapping a server with envmcp to load secrets from a .env file).",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Variants of one tool, keyed by variant name. The empty string key (\"\") is the default variant, selected by referencing the tool with no '@variant' suffix.",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["prefix"],
+              "description": "How this snippet's `cmd` combines with the rest of the resolved command. Currently only 'prefix' (prepend to the argv) is implemented."
+            },
+            "cmd": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1,
+              "description": "Argv tokens to prepend. May contain the literal token '$(git rev-parse --show-toplevel)', substituted by sync.py itself (not a shell) with the absolute repo root."
+            }
+          },
+          "required": ["mode", "cmd"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "servers": {
+      "type": "object",
+      "description": "MCP server definitions, keyed by server name.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether this server is active. Rendered as Codex's native `enabled` field and (one-directionally) into Claude's enabledMcpjsonServers/disabledMcpjsonServers."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["stdio", "http"]
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[^@]+(@.*)?$",
+              "description": "A reference to a tools.<name> entry, optionally '<name>@<variant>'. Resolved left-to-right; the leftmost tool is the outermost/first-spawned process."
+            }
+          },
+          "cmd": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "description": "The server's own bare command as one argv array (sync splits it into command/args for both clients)."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        },
+        "required": ["type"],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": { "properties": { "type": { "const": "stdio" } }, "required": ["type"] },
+            "then": {
+              "anyOf": [
+                { "required": ["cmd"] },
+                { "required": ["tools"], "properties": { "tools": { "minItems": 1 } } }
+              ]
+            }
+          },
+          {
+            "if": { "properties": { "type": { "const": "http" } }, "required": ["type"] },
+            "then": { "required": ["url"] }
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}

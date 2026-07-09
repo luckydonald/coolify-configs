@@ -1,0 +1,3 @@
+- [lplp: never drop ai: auto-commits](feedback_lplp_never_drop_ai_autocommits.md) — fold every chained `ai:` auto-commit into the new code commit; never `git reset --hard` past them, even smoke-test ones.
+- [commit prefix: [base] [ssp]](feedback_commit_prefix_ssp_tag.md) — use `[base] [ssp] ` prefix, not bare `[base] `, for the git branch-split feature work.
+- [lib naming convention](feedback_lib_naming_convention.md) — new shared logic goes in a `°name_lib` package, not `_lib.py`; public functions there have no leading underscore.

@@ -1,0 +1,43 @@
+{
+  "skill_name": "coolify-compose-deploy",
+  "evals": [
+    {
+      "id": 0,
+      "name": "node-postgres-deploy",
+      "prompt": "I'm deploying a Node.js app + Postgres to Coolify with a docker-compose.coolify.yml. The app should be reachable at app.mydomain.com, and DATABASE_URL and a Postgres password should not be things I hardcode or type in myself. Write the compose file.",
+      "expected_output": "A compose file with two services (app + postgres). App gets a domain via Coolify's proxy (port 80 or explicit port in domain, not raw `ports:` mapping unless justified). DATABASE_URL declared as a required env var using Coolify's `${VAR:?}` syntax and wired to the postgres service via a magic SERVICE_PASSWORD_ variable rather than a hardcoded password. Postgres itself is not given a public domain (stays internal).",
+      "assertions": [
+        {"text": "Uses Coolify magic env var syntax (SERVICE_PASSWORD_* or similar) for the Postgres password rather than a hardcoded/random string typed by the model", "category": "correctness"},
+        {"text": "App service is exposed via a domain/proxy mechanism appropriate to Coolify (not a raw host ports: mapping as the primary exposure method)", "category": "correctness"},
+        {"text": "DATABASE_URL or equivalent uses the `${VAR:?}` required-variable syntax", "category": "correctness"},
+        {"text": "Postgres service has no public domain/port exposure (stays reachable only within the stack network)", "category": "correctness"},
+        {"text": "Response references or is clearly informed by Coolify-specific compose semantics (not generic vanilla docker-compose advice)", "category": "skill-grounding"}
+      ],
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "migration-healthcheck",
+      "prompt": "Coolify says my whole stack is unhealthy after a deploy, but I think it's just my one-shot Postgres migration container finishing and exiting normally that's causing it. How do I fix this in my docker-compose.coolify.yml?",
+      "expected_output": "Recommends adding `exclude_from_hc: true` to the migration service in the compose file, with a short explanation of why a one-shot container's normal exit shouldn't count toward stack health.",
+      "assertions": [
+        {"text": "Recommends the `exclude_from_hc: true` compose key on the migration service", "category": "correctness"},
+        {"text": "Explains why a one-shot/exiting container should be excluded from healthchecks", "category": "clarity"},
+        {"text": "Does not invent an unrelated Docker Compose healthcheck override (e.g. a custom `healthcheck:` block) as the primary fix when the simpler Coolify-specific flag solves it directly", "category": "correctness"}
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "port-domain-routing",
+      "prompt": "My service in docker-compose.coolify.yml listens on container port 3000. I want it reachable at my-app.example.com (not my-app.example.com:3000), and I also want /api requests on that domain to keep working. What do I need to set in Coolify?",
+      "expected_output": "Explains assigning the domain in Coolify's UI as http://my-app.example.com:3000 (port goes in the domain field, not the external URL) so the proxy maps port 80/443 externally to container port 3000 internally, and that no changes are needed for the /api path since it's just a path under the same domain/service and doesn't require a separate ports: mapping or its own domain entry.",
+      "assertions": [
+        {"text": "Correctly explains that specifying :3000 in the domain field routes proxy traffic to container port 3000 while still serving externally on 80/443 (not literally exposing example.com:3000 to visitors)", "category": "correctness"},
+        {"text": "Does not recommend a raw `ports:` host mapping as the way to solve domain-based routing", "category": "correctness"},
+        {"text": "Addresses that /api is just a path on the same domain and doesn't need special compose config", "category": "completeness"}
+      ],
+      "files": []
+    }
+  ]
+}

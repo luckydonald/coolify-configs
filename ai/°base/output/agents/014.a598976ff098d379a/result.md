@@ -1,0 +1,18 @@
+Only the four intended new files were touched (plus untracked pre-existing files from concurrent agents, untouched by me). Did not touch `cli.py` or any other existing file.
+
+## Summary
+
+Implemented subsystem (C) of the plan: `history_master.py` and `rebase_to_master.py`, plus their test files, all under `scripts/°base/git/°split_lib/` and `scripts/°base/tests/`.
+
+**`history_master.py`**: No `git rebase --exec` — drives everything via a Python loop (`_run_steps`) over a precomputed step list, using `git_ops.cherry_pick`/`cherry_pick_continue`/`cherry_pick_abort` for ordinary commits and an explicit merge-recreation procedure (`recreate_base_merge`) for base-merges (auto-resolves conflicts per-path using the original merge's resolved blob). Implements `is_base_merge`, `replay_commit`, `recreate_base_merge`, `find_newly_merged_clean_branches`, `has_merge_marker`, the `BASE_SPLIT_HISTORY_MASTER_STATE` JSON state file, and `update_history_master(...)` with `--continue`/`--abort`/`--force-merge`/`--pull-master`/`--pull-base`/`--yes`/`--dry-run` semantics.
+
+**`rebase_to_master.py`**: `rebase_branches_to_master(base_branch, ...)` does the three-way clean → history → unclean rebase with correct skip-and-report semantics, raising `ValueError` if none of the three variants exist.
+
+**Deviations / design decisions** (documented in code comments):
+1. No ref is designated by the plan for "what master tip history-master last agreed with" (only a per-branch fork-point ref exists, for individual branches, not for history-master itself). Derived it as `merge_base(old_history_sha, master_tip)` — history-master's master-derived commits are literal, un-rebased copies until master's own history is rewritten, so this merge-base is exactly the correct replay fork point.
+2. `find_newly_merged_clean_branches`'s `old_master_sha` is typed `str | None` (plan shows `str`) so the very first run can reuse the same scan over master's whole history instead of a parallel implementation.
+3. When subsystem (A)'s `refs/base-split/history-master-fork-point/{branch}` ref is absent (as it is — (A)'s `sync_splits.py` doesn't write it yet), fell back to `merge_base` between the history branch and history-master's tip to determine "unique" branch-history commits to replay.
+4. Discovered and fixed a real bug during testing: walking `old_master_sha..old_history_sha` with a plain (all-parents) `rev-list` incorrectly pulls in a base-merge's *second* parent (base/base's own commits) as if they were independent commits needing their own cherry-pick — added a local `_first_parent_chain_reverse` helper (git_ops.py is frozen) to walk only the first-parent chain there.
+5. Also handled `git cherry-pick` failing with "the previous cherry-pick is now empty" (e.g. re-picking an empty merge-marker commit) by detecting that case specifically (no conflicted paths + that message) and finishing via `git commit --allow-empty --no-edit` rather than treating it as a real conflict — `git_ops.cherry_pick` can't pass `--allow-empty` since it's fixed/frozen plumbing.
+
+**Test results**: `uv run --project scripts/°base python -m unittest scripts.°base.tests.test_git_split_history_master scripts.°base.tests.test_git_split_rebase_to_master -v` — all 10 new tests pass. Also ran the full suite (`unittest discover -s scripts/°base/tests`) — 359 tests pass (2 unrelated skips), confirming no regressions against work done concurrently by other agents (subsystems A/B).
