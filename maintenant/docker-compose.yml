@@ -8,13 +8,13 @@ services:
     tmpfs:
       - /tmp:noexec,nosuid,size=64m
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro,z
       - /proc:/host/proc:ro
-      - type: bind
-        source: ./data
-        target: /data
+      - type: volume
+        source: maintenant-data
+        target: /data/
         # noinspection ComposeUnknownKeys
-        is_directory: true
+        # is_directory: true
     environment:
       SERVICE_FQDN_MAINTENANT_8080: /
       MAINTENANT_ADDR: ${MAINTENANT_ADDR:-0.0.0.0:8080}
@@ -33,3 +33,7 @@ services:
       MAINTENANT_MCP_ALLOWED_REDIRECT_URIS: ${MAINTENANT_MCP_ALLOWED_REDIRECT_URIS:-}
       MAINTENANT_DISABLE_TELEMETRY: ${MAINTENANT_DISABLE_TELEMETRY:-true}
     restart: unless-stopped
+
+
+volumes:
+  maintenant-data:
