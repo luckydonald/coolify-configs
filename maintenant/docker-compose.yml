@@ -2,6 +2,11 @@
 services:
   maintenant:
     image: ghcr.io/kolapsis/maintenant:latest
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc:/host/proc:ro
@@ -14,4 +19,17 @@ services:
       SERVICE_FQDN_MAINTENANT_8080: /
       MAINTENANT_ADDR: ${MAINTENANT_ADDR:-0.0.0.0:8080}
       MAINTENANT_DB: ${MAINTENANT_DB:-/data/maintenant.db}
+      MAINTENANT_BASE_URL: ${MAINTENANT_BASE_URL:-${SERVICE_URL_MAINTENANT:-http://localhost:8080}}
+      MAINTENANT_STATUS_URL: ${MAINTENANT_STATUS_URL:-}
+      MAINTENANT_ORGANISATION_NAME: ${MAINTENANT_ORGANISATION_NAME:-Maintenant}
+      MAINTENANT_CORS_ORIGINS: ${MAINTENANT_CORS_ORIGINS:-}
+      MAINTENANT_RUNTIME: ${MAINTENANT_RUNTIME:-docker}
+      MAINTENANT_MAX_BODY_SIZE: ${MAINTENANT_MAX_BODY_SIZE:-1048576}
+      MAINTENANT_UPDATE_INTERVAL: ${MAINTENANT_UPDATE_INTERVAL:-24h}
+      MAINTENANT_LICENSE_KEY: ${MAINTENANT_LICENSE_KEY:-}
+      MAINTENANT_MCP: ${MAINTENANT_MCP:-false}
+      MAINTENANT_MCP_CLIENT_ID: ${MAINTENANT_MCP_CLIENT_ID:-}
+      MAINTENANT_MCP_CLIENT_SECRET: ${MAINTENANT_MCP_CLIENT_SECRET:-}
+      MAINTENANT_MCP_ALLOWED_REDIRECT_URIS: ${MAINTENANT_MCP_ALLOWED_REDIRECT_URIS:-}
+      MAINTENANT_DISABLE_TELEMETRY: ${MAINTENANT_DISABLE_TELEMETRY:-true}
     restart: unless-stopped

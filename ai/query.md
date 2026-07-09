@@ -28,3 +28,5 @@
 
 › Make @maintenant/docker-compose.yml coolify ready.
 
+› Utilize the full doc of that service, ai/references/https/github.com/kOlapsis/maintenant/blob/64ca5ff83f60b7172eac3c447714565c54c89186/README.md
+
