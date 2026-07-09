@@ -2,15 +2,16 @@
 services:
   maintenant:
     image: ghcr.io/kolapsis/maintenant:latest
-    ports:
-      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc:/host/proc:ro
-      - maintenant-data:/data
+      - type: bind
+        source: ./data
+        target: /data
+        # noinspection ComposeUnknownKeys
+        is_directory: true
     environment:
-      MAINTENANT_ADDR: "0.0.0.0:8080"
-      MAINTENANT_DB: "/data/maintenant.db"
+      SERVICE_FQDN_MAINTENANT_8080: /
+      MAINTENANT_ADDR: ${MAINTENANT_ADDR:-0.0.0.0:8080}
+      MAINTENANT_DB: ${MAINTENANT_DB:-/data/maintenant.db}
     restart: unless-stopped
-volumes:
-  maintenant-data:

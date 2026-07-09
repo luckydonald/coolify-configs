@@ -26,3 +26,5 @@
 
 #### Previous user prompts:
 
+› Make @maintenant/docker-compose.yml coolify ready.
+
